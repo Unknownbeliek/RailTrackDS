@@ -1,0 +1,136 @@
+{
+  "success": true,
+  "data": {
+    "train": {
+      "number": "12801",
+      "name": "Purushottam Express",
+      "nameHi": "पुरुषोत्तम एक्सप्रेस",
+      "category": "SF",
+      "type": "SF",
+      "sourceCode": "NDLS",
+      "destinationCode": "CNB",
+      "daysOfRun": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    "route": [
+      {
+        "seq": 0,
+        "stationCode": "NDLS",
+        "stationName": "New Delhi",
+        "arrivalMin": null,
+        "departureMin": 345,
+        "arrivalDay": 0,
+        "departureDay": 0,
+        "distanceKm": 0,
+        "platform": "1",
+        "actualArrivalMin": null,
+        "actualDepartureMin": 371,
+        "delayMin": 26,
+        "lat": 28.6431,
+        "lng": 77.2197
+      },
+      {
+        "seq": 1,
+        "stationCode": "GZB",
+        "stationName": "Ghaziabad",
+        "arrivalMin": 370,
+        "departureMin": 374,
+        "arrivalDay": 0,
+        "departureDay": 0,
+        "distanceKm": 25.6,
+        "platform": "4",
+        "actualArrivalMin": 396,
+        "actualDepartureMin": 400,
+        "delayMin": 26,
+        "lat": 28.6618,
+        "lng": 77.4378
+      },
+      {
+        "seq": 2,
+        "stationCode": "ALJN",
+        "stationName": "Aligarh Junction",
+        "arrivalMin": 478,
+        "departureMin": 482,
+        "arrivalDay": 0,
+        "departureDay": 0,
+        "distanceKm": 133.1,
+        "platform": "3",
+        "actualArrivalMin": 504,
+        "actualDepartureMin": 508,
+        "delayMin": 26,
+        "lat": 27.8974,
+        "lng": 78.088
+      },
+      {
+        "seq": 3,
+        "stationCode": "TDL",
+        "stationName": "Tundla Junction",
+        "arrivalMin": 548,
+        "departureMin": 552,
+        "arrivalDay": 0,
+        "departureDay": 0,
+        "distanceKm": 201.4,
+        "platform": "2",
+        "actualArrivalMin": 574,
+        "actualDepartureMin": 578,
+        "delayMin": 26,
+        "lat": 27.2167,
+        "lng": 78.2333
+      },
+      {
+        "seq": 4,
+        "stationCode": "ETW",
+        "stationName": "Etawah Junction",
+        "arrivalMin": 632,
+        "departureMin": 636,
+        "arrivalDay": 0,
+        "departureDay": 0,
+        "distanceKm": 284.2,
+        "platform": "1",
+        "actualArrivalMin": 658,
+        "actualDepartureMin": 662,
+        "delayMin": 26,
+        "lat": 26.7843,
+        "lng": 79.02
+      },
+      {
+        "seq": 5,
+        "stationCode": "CNB",
+        "stationName": "Kanpur Central",
+        "arrivalMin": 787,
+        "departureMin": null,
+        "arrivalDay": 0,
+        "departureDay": 0,
+        "distanceKm": 440.4,
+        "platform": "4",
+        "actualArrivalMin": null,
+        "actualDepartureMin": null,
+        "delayMin": null,
+        "lat": 26.4499,
+        "lng": 80.3319
+      }
+    ],
+    "live": {
+      "currentStation": "ETW",
+      "nextStation": "CNB",
+      "minutesSinceDeparture": 114,
+      "minutesToNextStation": 37,
+      "delayMin": 26,
+      "lat": 26.5318,
+      "lng": 80.0104,
+      "speedKph": 53,
+      "takenAt": "2026-11-01T07:00:00.000Z"
+    }
+  },
+  "meta": {
+    "source": "railradar-fixture",
+    "timestamp": "2026-11-01T06:30:00.000Z"
+  }
+}

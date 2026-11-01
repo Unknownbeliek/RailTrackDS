@@ -1,0 +1,17 @@
+{
+  "name": "RailPulse — Indian trains, honestly labelled",
+  "short_name": "RailPulse",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F3F6F8",
+  "theme_color": "#0B2540",
+  "description": "Trains on the Delhi–Kanpur corridor with the as-of time and Estimated labels always visible.",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
