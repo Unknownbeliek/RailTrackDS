@@ -15,6 +15,7 @@ import {
   snapshotSchema,
   stationSchema,
   stopTimingSchema,
+  trainObservationSchema,
   trainPositionSchema,
   trainSchema,
 } from './domain';
@@ -74,6 +75,11 @@ export const corridorMapSchema = envelope(
         trainNameHi: z.string().nullable(),
         direction: z.enum(['up', 'down']),
         speedKph: z.number().nullable(),
+        /**
+         * The stored observation, so the browser can move the marker between
+         * refreshes with the same estimatePosition function (section 12).
+         */
+        observation: trainObservationSchema,
       }),
     ),
     snapshot: snapshotSchema.nullable(),

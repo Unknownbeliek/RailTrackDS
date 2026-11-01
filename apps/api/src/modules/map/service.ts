@@ -29,12 +29,13 @@ export async function corridorMapService(
   const viewingAt = query.at ? new Date(query.at) : (state.snapshot?.takenAt ?? now.toISOString());
   const states = buildStates(state, viewingAt);
 
-  const trains = [...states.values()].map(({ train, position, direction, speedKph }) => ({
+  const trains = [...states.values()].map(({ train, position, direction, speedKph, observation }) => ({
     ...position,
     trainName: train.name,
     trainNameHi: train.nameHi,
     direction,
     speedKph,
+    observation,
   }));
 
   return {
