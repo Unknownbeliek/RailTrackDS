@@ -44,6 +44,15 @@ export const MARKER_TICK_MS = 1000;
 /** Client refetch of cached endpoints. Costs zero provider requests. */
 export const CLIENT_POLL_MS = 60 * 1000;
 
+/**
+ * Planned snapshot times in the budget timezone (section 15). Two a day is
+ * what the daily allowance supports with a 100-request cap and 20 in reserve.
+ */
+export const SNAPSHOT_PLAN_IST = ['09:30', '18:30'] as const;
+
+/** Scheduler tick; a tick fires a snapshot only if one is planned and missing. */
+export const SCHEDULER_TICK_MS = 5 * 60 * 1000;
+
 /* ----------------------------------------------------------------- delay -- */
 
 /** Delay bands in minutes: on time < slight < major (section 6.3). */

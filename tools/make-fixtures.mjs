@@ -49,8 +49,6 @@ const SNAPSHOTS = [
   { file: 'live-map-2026-11-01T07-00-00Z.json', utc: '2026-11-01T07:00:00.000Z' },
 ];
 
-const byCode = new Map(STATIONS.map((s) => [s.code, s]));
-
 /** Timetable as minutes-from-origin-midnight offsets (never dates). */
 function buildRoute(spec) {
   const order = spec.direction === 'down' ? STATIONS : [...STATIONS].reverse();
@@ -151,7 +149,7 @@ async function main() {
     `${OUT}stations.json`,
     JSON.stringify(
       envelope({
-        stations: STATIONS.map(({ code, name, nameHi, lat, lng, zone, isJunction }) => ({
+        stations: STATIONS.map(({ code, name, nameHi, zone, isJunction }) => ({
           code, name, nameHi, zone, isJunction,
           // The real station lookup returns no coordinates (spike S8).
           lat: null,
@@ -200,7 +198,8 @@ async function main() {
   });
 
   // Train details for a few corridor trains (route + live part).
-  const detailsFor = ['12301', '12002', '64101'];
+  // One details fixture per corridor train: the static part is saved for good.
+  const detailsFor = TRAINS.map((t) => t.number);
   const atMinutes = localMinutes(SNAPSHOTS[1].utc);
   await Promise.all(
     detailsFor.map((number) => {

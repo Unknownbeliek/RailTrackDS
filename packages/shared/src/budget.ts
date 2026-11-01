@@ -94,30 +94,50 @@ export function dailyAllowance(remaining: number, reserve: number, daysLeft: num
   return Math.floor(spendable / Math.max(1, daysLeft));
 }
 
+/**
+ * The allowance for the whole of today.
+ *
+ * Spending during the day lowers `remaining`, which would otherwise shrink the
+ * allowance under our own feet (a ratchet that halves the usable budget). The
+ * day's share is therefore measured from what was left when the day began:
+ * remaining now, plus what we already spent today.
+ */
+export function todayAllowance(input: {
+  remaining: number;
+  usedToday: number;
+  reserve: number;
+  daysLeft: number;
+}): number {
+  return dailyAllowance(input.remaining + input.usedToday, input.reserve, input.daysLeft);
+}
+
 export interface SpendDecision {
   allowed: boolean;
-  reason?: 'reserve' | 'daily-allowance' | 'cap';
+  reason?: 'reserve' | 'daily-allowance';
   dailyAllowance: number;
-  usedToday: number;
   remaining: number;
 }
 
 /** One place decides whether a request may be spent right now. */
 export function canSpend(input: {
   used: number;
-  usedToday: number;
   dailyUsed: number;
   cap: number;
   reserve: number;
   daysLeft: number;
 }): SpendDecision {
   const remaining = Math.max(0, input.cap - input.used);
-  const allowance = dailyAllowance(remaining, input.reserve, input.daysLeft);
+  const allowance = todayAllowance({
+    remaining,
+    usedToday: input.dailyUsed,
+    reserve: input.reserve,
+    daysLeft: input.daysLeft,
+  });
   if (remaining - 1 < input.reserve) {
-    return { allowed: false, reason: 'reserve', dailyAllowance: allowance, usedToday: input.usedToday, remaining };
+    return { allowed: false, reason: 'reserve', dailyAllowance: allowance, remaining };
   }
   if (input.dailyUsed + 1 > allowance) {
-    return { allowed: false, reason: 'daily-allowance', dailyAllowance: allowance, usedToday: input.usedToday, remaining };
+    return { allowed: false, reason: 'daily-allowance', dailyAllowance: allowance, remaining };
   }
-  return { allowed: true, dailyAllowance: allowance, usedToday: input.usedToday, remaining };
+  return { allowed: true, dailyAllowance: allowance, remaining };
 }
