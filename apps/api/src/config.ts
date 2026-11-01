@@ -59,6 +59,13 @@ export interface AppConfig {
   maxTrainDetails: number;
 }
 
+/**
+ * The train-details cap exists to protect a 100-request month, so a typo like
+ * MAX_TRAIN_DETAILS=9999 must not override it: 24 leaves room for two snapshots
+ * a day and the 20-request reserve.
+ */
+const MAX_TRAIN_DETAILS_LIMIT = 24;
+
 function int(value: string | undefined, fallback: number): number {
   const parsed = Number.parseInt(value ?? '', 10);
   return Number.isFinite(parsed) ? parsed : fallback;
@@ -82,7 +89,9 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     providerMode,
     railRadarApiKey: env.RAILRADAR_API_KEY ?? '',
     railRadarBaseUrl: env.RAILRADAR_BASE_URL ?? 'https://api.railradar.in',
-    databaseUrl: env.DATABASE_URL ?? '',
+    // DATABASE_URL_POOLED is the name Neon puts next to the direct string; either
+    // works, so accept both instead of failing on the one that was copied.
+    databaseUrl: (env.DATABASE_URL ?? '').trim() || (env.DATABASE_URL_POOLED ?? '').trim(),
     dataDir: env.PGLITE_DIR ?? './.data/pglite',
     monthlyCap: int(env.MONTHLY_CAP, MONTHLY_CAP_DEFAULT),
     reserve: int(env.RESERVE, RESERVE_DEFAULT),
@@ -102,7 +111,10 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
       .split(',')
       .map((number) => number.trim())
       .filter((number) => /^\d{4,5}$/.test(number)),
-    maxTrainDetails: int(env.MAX_TRAIN_DETAILS, 12),
+    maxTrainDetails: Math.min(
+      MAX_TRAIN_DETAILS_LIMIT,
+      Math.max(1, int(env.MAX_TRAIN_DETAILS, 12)),
+    ),
   };
 }
 

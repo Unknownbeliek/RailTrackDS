@@ -351,3 +351,35 @@ stretching the phone layout — what was there.
 
 **Consequences:** CSS only (`apps/web/src/styles/global.css`), no component
 forks, so both shapes cannot drift apart.
+
+---
+
+## D-017 Connection strings are normalised, and failures are explained
+Date: 2026-11-01
+
+**Context:** Pointing the app at a real Neon instance produced two things a
+person cannot act on: a long `sslmode` deprecation warning from node-postgres,
+and `Connection terminated unexpectedly` with no mention of what to check. Neon
+also hands out a string containing `channel_binding=require`, an option
+node-postgres does not implement.
+
+**Decision:** `packages/db/src/connection.ts` owns connection strings.
+
+- `normalizeDatabaseUrl` strips quotes, drops `channel_binding`, and adds
+  `sslmode=require` when the host is a known hosted provider and the parameter
+  is missing. It returns notes, which `npm run doctor` prints.
+- `driverOptions` maps `sslmode` onto pg's own `ssl` option (so no deprecation
+  wall) with `rejectUnauthorized` true except for an explicit `no-verify`.
+- `describeConnectionFailure` turns driver errors into a code, a sentence, and
+  two or three concrete fixes. `tools/db.ts` and `doctor` both use it.
+- `DATABASE_URL_POOLED` is accepted when `DATABASE_URL` is blank, because that
+  is the name of the second string every dashboard shows.
+- `pool.on('error')` is handled, so a Neon idle-timeout cannot take the API down.
+
+**Alternatives:** telling users to edit the URL by hand — two of the three
+adjustments are invisible, so they would not know to do it; `uselibpqcompat=true`
+— it would silence the warning by choosing the weaker libpq semantics.
+
+**Consequences:** tests cover every adjustment and error mapping without any
+network access. A blocked port 5432 is now a named diagnosis rather than a
+stack trace.

@@ -18,7 +18,10 @@ import {
   latestSnapshot,
   ledgerTotals,
   listCorridors,
+  describeConnectionFailure,
+  describeTarget,
   migrate,
+  normalizeDatabaseUrl,
   observationTotals,
   resetSchema,
   usageCounts,
@@ -32,7 +35,7 @@ import { loadEnvFile } from '../apps/api/src/config';
 // Same `.env` handling as the API, so DATABASE_URL in the file is honoured.
 loadEnvFile();
 
-const DATABASE_URL = process.env.DATABASE_URL ?? '';
+const DATABASE_URL = normalizeDatabaseUrl(process.env.DATABASE_URL || process.env.DATABASE_URL_POOLED || '').url;
 // Absolute, so the CLI writes the same store whatever directory it is run from.
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const DATA_DIR = process.env.PGLITE_DIR ?? `${ROOT}.data/pglite`;
@@ -97,6 +100,7 @@ async function status(sql: Sql): Promise<void> {
 async function main(): Promise<void> {
   const command = process.argv[2] ?? 'migrate';
   const sql = await open();
+  console.log(`Database: ${describeTarget(DATABASE_URL)}`);
   try {
     switch (command) {
       case 'migrate': {
@@ -134,6 +138,9 @@ async function main(): Promise<void> {
 }
 
 main().catch((error) => {
-  console.error(error);
+  const hint = describeConnectionFailure(error, DATABASE_URL);
+  console.error(`\nDatabase error (${hint.code}): ${hint.message}\n`);
+  for (const fix of hint.fixes) console.error(`  - ${fix}`);
+  console.error('\nNothing was changed. Fix the above and run the command again.\n');
   process.exit(1);
 });

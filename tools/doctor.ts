@@ -9,6 +9,9 @@
 import path from 'node:path';
 import {
   countStations,
+  describeConnectionFailure,
+  describeTarget,
+  normalizeDatabaseUrl,
   countTrains,
   createDatabase,
   latestSnapshot,
@@ -73,14 +76,16 @@ async function main(): Promise<void> {
   else warn('admin token', 'empty, so /api/v1/admin/* answers UNAUTHORIZED (set ADMIN_TOKEN to use the budget page)');
 
   console.log('\ndatabase');
-  const where = config.databaseUrl
-    ? `${config.databaseUrl.replace(/:[^:@/]+@/, ':***@')}`
+  const normalized = normalizeDatabaseUrl(config.databaseUrl);
+  const target = normalized.url
+    ? describeTarget(normalized.url)
     : `embedded PGlite at ${repoPath(config.dataDir)}`;
-  ok('target', where);
+  ok('target', target);
+  for (const note of normalized.notes) warn('connection string', note);
 
   let sql: Sql | null = null;
   try {
-    sql = await createDatabase({ url: config.databaseUrl, dataDir: repoPath(config.dataDir) });
+    sql = await createDatabase({ url: normalized.url, dataDir: repoPath(config.dataDir) });
     await migrate(sql);
     ok('migrations', 'applied (nothing pending)');
 
@@ -126,9 +131,10 @@ async function main(): Promise<void> {
       }
     }
   } catch (error) {
-    bad('database', String(error instanceof Error ? error.message : error));
-    console.log('  If you pointed DATABASE_URL at Postgres, make sure the server is running');
-    console.log('  and the URL includes ?sslmode=require for hosted providers.');
+    const hint = describeConnectionFailure(error, normalized.url);
+    bad('database', `${hint.code}: ${hint.message}`);
+    for (const fix of hint.fixes) console.log(`        → ${fix}`);
+    console.log('\n  Nothing else is broken: the app will not start until this connects.');
   } finally {
     await sql?.close();
   }

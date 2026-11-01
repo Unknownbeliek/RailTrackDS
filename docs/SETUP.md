@@ -54,32 +54,71 @@ deployed server: the data lives on that one machine's disk.
 
 ### Option B — Neon (recommended free managed Postgres)
 
-Why Neon: the free tier never expires, it sleeps when idle and wakes on the
-first query, it gives you a connection string with `?sslmode=require`, and it
-needs no credit card.
+Why Neon: the free tier never expires, it needs no credit card, it autosuspends
+when idle and wakes on the first query, and it gives you a connection string
+with `?sslmode=require` already in it.
 
-1. Go to **https://neon.com** (formerly neon.tech) and sign up with GitHub.
-2. **Create project**: name `railtrack`, Postgres version 16 or newer, region
-   `AWS ap-southeast-1 (Singapore)` (closest to Indian users).
-3. On the project dashboard press **Connect** and copy the string; it looks like
+1. Go to **https://neon.com** and sign up with GitHub.
+2. **Create project**: name `railtrack`, Postgres 16+, region
+   `AWS ap-southeast-1 (Singapore)` (lowest latency from India).
+3. On the dashboard press **Connect**. Neon shows **two** strings:
+
+   | | host | use it for |
+   | --- | --- | --- |
+   | **Pooled** | `ep-xxx-pooler.c-2.ap-southeast-1.aws.neon.tech` | the API, the scheduler |
+   | Direct | `ep-xxx.c-2.ap-southeast-1.aws.neon.tech` | migrations, `psql`, `pg_dump` |
+
+   They look like this (the password is only shown here — copy it now):
+
    ```
-   postgresql://neondb_owner:npg_XXXXXXXX@ep-cool-name-12345678.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
+   postgresql://neondb_owner:npg_XXXXXXXX@ep-xxx-pooler.c-2.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
    ```
-4. Paste it into `.env` as `DATABASE_URL=` (keep the `?sslmode=require`).
-5. Run:
+
+4. Paste the **pooled** one into `.env`:
+
+   ```env
+   DATABASE_URL="postgresql://neondb_owner:npg_XXXX@ep-xxx-pooler.c-2.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+   ```
+
+   Three details that decide whether it works:
+
+   - **Keep the quotes.** The URL contains `&`, which a shell would otherwise
+     split into a background command.
+   - **`channel_binding=require` is fine.** It is a `psql` option;
+     node-postgres does not implement channel binding, so it is dropped for you
+     (with a note in `npm run doctor`). TLS and SCRAM authentication still apply.
+   - **`DATABASE_URL_POOLED` works too.** Past the string under that name and
+     the app picks it up when `DATABASE_URL` is blank.
+
+5. Create the tables and check:
+
    ```bash
-   npm run db:migrate     # creates the 13 tables
-   npm run doctor         # confirms the connection and the target
+   npm run db:migrate     # 13 tables + schema_migrations
+   npm run db:seed        # reference data from the saved fixtures, no requests
+   npm run doctor         # target, row counts, ledger
    ```
 
-Notes
+   If a migration stalls through the pooler, run `npm run db:migrate` once with
+   the **direct** host in `DATABASE_URL`, then put the pooled one back.
 
-- Use the **pooled** host (the one with `-pooler` in it) if you deploy the API to
-  a serverless host; either host works for this app.
-- The free tier gives 0.5 GB. This app stores a few hundred small rows a day, so
-  that is years of headroom at two snapshots a day.
-- Backups (section 10 of the PRD): `provider_calls` is the valuable table. Run
-  `pg_dump "$DATABASE_URL" -t provider_calls -f ledger-$(date +%F).sql` weekly.
+**"Connection terminated unexpectedly" / ETIMEDOUT?** The TCP connection opens
+and the TLS handshake never finishes. In order of likelihood:
+
+1. A firewall, antivirus or corporate proxy blocks outgoing **port 5432**.
+   Mobile hotspot or a different network usually proves it. Managed hosts only
+   listen on 5432; there is no HTTPS fallback for node-postgres.
+2. Containers, CI runners and some sandboxes have the same block. Run the
+   migration from your own machine, not from inside the container.
+3. A suspended project wakes on the first query — retry once after a second.
+
+`npm run doctor` names the cause it recognises and what to try, instead of
+printing the driver's stack trace.
+
+**Backups.** `provider_calls` is the valuable table (raw payloads). Weekly:
+
+```bash
+pg_dump "$DATABASE_URL" -t provider_calls -f ledger-$(date +%F).sql
+```
 
 ### Option C — Supabase
 
@@ -241,7 +280,9 @@ npm run build     # production web build
 | `PROVIDER_MODE=live needs RAILRADAR_API_KEY` | key missing in `.env`, or `.env` is not in the repository root |
 | `relation "provider_calls" does not exist` | `npm run db:migrate` has not run against this database |
 | `password authentication failed` | special characters in the password need URL-encoding (`@` → `%40`) |
+| `Connection terminated unexpectedly` (Neon/Supabase) | Port 5432 blocked by a firewall or proxy — see the note in the Neon section; run migrations outside containers |
 | `timeout expired` connecting to Neon/Supabase | IPv6-only network: use the pooled host, or add `?sslmode=require` |
+| `channel_binding` looks unsupported | It is: it is a psql option and is dropped automatically. Keep it or delete it, same result |
 | Map is blank but the list works | WebGL 2 is unavailable — the map now says so and explains the fix |
 | `EADDRINUSE` on 3001/5173 | `lsof -ti:3001 \| xargs kill` |
 | Two processes on one `.data/pglite` | stop the other process, or `rm -rf .data && npm run db:setup` |
