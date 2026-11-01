@@ -12,6 +12,7 @@ import { AsOfBanner, StaleNote } from '../../components/AsOfBanner';
 import { Chip, EmptyState, ErrorState, Loading } from '../../components/ui';
 import { Sheet, type SheetState } from '../../components/Sheet';
 import { DelayPill } from '../../components/DelayPill';
+import { LanguageToggle } from '../../components/LanguageToggle';
 import { MapView } from '../../lib/map/MapView';
 import { positionTime, toMarkers } from '../../lib/positions';
 import { useNow } from '../../lib/useNow';
@@ -92,7 +93,7 @@ export function MapHome() {
   };
 
   return (
-    <div className="rp-app" style={{ position: 'relative' }}>
+    <div className="rp-app rp-app--fill">
       <div className="rp-map-wrap">
         <MapView
           stations={stations}
@@ -138,6 +139,13 @@ export function MapHome() {
         </div>
 
         {meta ? <AsOfBanner meta={meta} now={now} language={language} /> : null}
+
+        <div className="rp-row rp-row--between">
+          <span className="rp-badge" style={{ background: 'var(--rp-color-surface)' }}>
+            {t('map.tapTrain')}
+          </span>
+          <LanguageToggle />
+        </div>
       </div>
 
       <div className="rp-map-buttons">

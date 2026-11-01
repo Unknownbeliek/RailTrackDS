@@ -51,10 +51,16 @@ a {
   min-height: 0;
   overflow-y: auto;
   padding: var(--rp-space-lg);
-  padding-bottom: calc(var(--rp-layout-tab-bar-height) + var(--rp-space-xl));
+  padding-bottom: var(--rp-space-xl);
   max-width: var(--rp-layout-max-width);
   width: 100%;
   margin: 0 auto;
+}
+
+.rp-app--fill {
+  position: absolute;
+  inset: 0;
+  height: auto;
 }
 
 .rp-screen--flush {
@@ -376,7 +382,7 @@ a {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: calc(var(--rp-layout-tab-bar-height));
+  bottom: 0;
   background: var(--rp-color-surface);
   border-radius: var(--rp-radius-lg) var(--rp-radius-lg) 0 0;
   box-shadow: var(--rp-shadow-sheet);

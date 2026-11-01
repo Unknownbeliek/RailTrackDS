@@ -2,7 +2,7 @@
   "name": "railtrackds",
   "version": "0.1.0",
   "private": true,
-  "description": "RailPulse India — Indian trains on a map, with honest labels for how old and how estimated the data is.",
+  "description": "RailPulse India \u2014 Indian trains on a map, with honest labels for how old and how estimated the data is.",
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -24,7 +24,7 @@
     "ingest:snapshot": "npm run ingest:snapshot -w @railpulse/api",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc -b tsconfig.build.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p apps/web/tsconfig.json",
     "lint": "eslint .",
     "boundaries": "depcruise apps packages --config .dependency-cruiser.cjs",
     "dupes": "jscpd apps packages --config .jscpd.json",

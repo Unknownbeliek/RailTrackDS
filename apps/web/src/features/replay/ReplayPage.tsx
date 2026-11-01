@@ -93,7 +93,7 @@ export function ReplayPage() {
   const end = last ? new Date(last.takenAt).getTime() : 0;
 
   return (
-    <div className="rp-app" style={{ position: 'relative' }}>
+    <div className="rp-app rp-app--fill">
       <div className="rp-map-wrap">
         <MapView stations={stations} trains={markers} fitKey={activeSlug ?? undefined} />
       </div>
