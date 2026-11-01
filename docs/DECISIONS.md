@@ -262,3 +262,124 @@ same command with `NODE_ENV=production`.
 | S6 | Which base URL is current? | `RAILRADAR_BASE_URL` |
 | S7 | Do the free tiles allow our usage? | `apps/web/src/lib/map/style.ts` |
 | S8 | Where do station coordinates come from? | `seed/corridor.ts`, `setStationCoords` |
+
+---
+
+## D-013 `.env` is read by `config.ts`, and nothing else
+Date: 2026-11-01
+
+**Context:** The first build only read `process.env`, so a key pasted into `.env`
+was silently ignored and the app stayed in fixtures mode — the most confusing
+possible failure, because everything appears to work.
+
+**Decision:** `apps/api/src/config.ts` loads `.env.local` then `.env` with
+`dotenv` (`override: false`, so a shell export always wins) before reading any
+variable. `tools/db.ts` calls the same `loadEnvFile()`. `.env.example` documents
+every variable with an example value, and `npm run doctor` reports what was
+loaded without ever printing the key.
+
+**Alternatives:** `node --env-file` — Node 20+ only and not available to `tsx`
+child processes consistently; per-package dotenv — five readers of the same file.
+
+**Consequences:** rule N1 still holds (one reader, server side only). A wrong
+`.env` now produces a clear message instead of a quiet fixtures-mode fallback.
+
+---
+
+## D-014 Bounded static load: explicit trains, or boards-based discovery
+Date: 2026-11-01
+
+**Context:** `loadReference` fetched train details for *every* train returned by
+`listTrains`. In live mode that is thousands of requests against a monthly cap
+of 100: the first live run would have burned the quota and the account.
+
+**Decision:** the static load now takes `CORRIDOR_TRAINS` when set. Otherwise it
+either (a) reads one station board per corridor station and keeps trains that
+appear at two or more of them, or (b) in fixtures mode reads every recorded
+train, which is free. Either way it never exceeds `MAX_TRAIN_DETAILS` (default
+12) and logs how many it skipped. Corridor membership is still derived from the
+saved timetables.
+
+**Alternatives:** fetching everything and hoping — rejected, it is the exact
+mistake rule N2 exists to prevent; hard-coding train numbers — rejected, that is
+code, and corridors are data.
+
+**Consequences:** a live static load costs about 2 + 6 + N requests where N ≤ 12,
+and the admin budget page shows it before a snapshot is ever taken.
+
+---
+
+## D-015 The map degrades with words, not a blank canvas
+Date: 2026-11-01
+
+**Context:** MapLibre GL needs WebGL 2. On a VM, a remote session, or a machine
+with GPU acceleration switched off, `new maplibregl.Map()` throws and the canvas
+stayed empty — the map area looked broken while the data behind it was fine.
+
+**Decision:** `MapView` probes for WebGL 2, wraps construction in `try/catch`,
+listens for WebGL errors, and renders an explanatory panel with a retry button
+when it cannot start. A style or tile failure that is not fatal gets a small
+note ("tiles are not loading; trains are listed below"). The local layers — the
+corridor line, station labels, train markers — are drawn from our own data and
+keep working without tiles.
+
+**Alternatives:** a static image fallback — more work, and it would not let a
+user with a transient driver problem retry; silently drawing nothing — the bug
+this decision fixes.
+
+**Consequences:** the failure is testable (jsdom has no WebGL, so the fallback
+test runs the real code path) and the product never shows an unexplained blank.
+
+---
+
+## D-016 One layout, two shapes: phone map-first, desktop map plus panel
+Date: 2026-11-01
+
+**Context:** The first build was a phone layout stretched across a desktop
+window: a narrow sheet pinned to the bottom, one column of content, a tab bar
+across 1900 px.
+
+**Decision:** from 1024 px the tab bar becomes a top navigation, the map keeps
+the flexible left area and the sheet becomes a fixed 420 px panel on the right
+(460 px from 1440 px). Train detail lays out as card + timetable on the left and
+reason + nearby on the right; search results show trains and stations side by
+side; the replay control bar centres over the map. Everything below 1024 px is
+unchanged, so the phone experience is identical to before.
+
+**Alternatives:** a separate desktop app — wasted effort for the same data;
+stretching the phone layout — what was there.
+
+**Consequences:** CSS only (`apps/web/src/styles/global.css`), no component
+forks, so both shapes cannot drift apart.
+
+---
+
+## D-017 Connection strings are normalised, and failures are explained
+Date: 2026-11-01
+
+**Context:** Pointing the app at a real Neon instance produced two things a
+person cannot act on: a long `sslmode` deprecation warning from node-postgres,
+and `Connection terminated unexpectedly` with no mention of what to check. Neon
+also hands out a string containing `channel_binding=require`, an option
+node-postgres does not implement.
+
+**Decision:** `packages/db/src/connection.ts` owns connection strings.
+
+- `normalizeDatabaseUrl` strips quotes, drops `channel_binding`, and adds
+  `sslmode=require` when the host is a known hosted provider and the parameter
+  is missing. It returns notes, which `npm run doctor` prints.
+- `driverOptions` maps `sslmode` onto pg's own `ssl` option (so no deprecation
+  wall) with `rejectUnauthorized` true except for an explicit `no-verify`.
+- `describeConnectionFailure` turns driver errors into a code, a sentence, and
+  two or three concrete fixes. `tools/db.ts` and `doctor` both use it.
+- `DATABASE_URL_POOLED` is accepted when `DATABASE_URL` is blank, because that
+  is the name of the second string every dashboard shows.
+- `pool.on('error')` is handled, so a Neon idle-timeout cannot take the API down.
+
+**Alternatives:** telling users to edit the URL by hand — two of the three
+adjustments are invisible, so they would not know to do it; `uselibpqcompat=true`
+— it would silence the warning by choosing the weaker libpq semantics.
+
+**Consequences:** tests cover every adjustment and error mapping without any
+network access. A blocked port 5432 is now a named diagnosis rather than a
+stack trace.

@@ -7,6 +7,7 @@
  */
 import type { PGlite } from '@electric-sql/pglite';
 import type { Pool } from 'pg';
+import { driverOptions, normalizeDatabaseUrl } from './connection';
 
 export interface QueryResult<T> {
   rows: T[];
@@ -61,10 +62,16 @@ export interface DatabaseOptions {
 }
 
 export async function createDatabase(options: DatabaseOptions = {}): Promise<Sql> {
-  const url = options.url ?? '';
+  // Normalise once, here, so every caller (API, CLI, doctor, tests) gets the
+  // same treatment of channel_binding, sslmode and quotes. See connection.ts.
+  const url = normalizeDatabaseUrl(options.url ?? '').url;
   if (url.startsWith('postgres')) {
     const { Pool: PgPool } = await import('pg');
-    const pool = new PgPool({ connectionString: url, max: 5 });
+    const { url: connectionString, ssl } = driverOptions(url);
+    const pool = new PgPool({ connectionString, max: 5, ...(ssl ? { ssl } : {}) });
+    // Without a listener, an idle-timeout from Neon turns into an unhandled
+    // 'error' event and takes the process down.
+    pool.on('error', () => {});
     return wrapPool(pool);
   }
   const { PGlite: EmbeddedPostgres } = await import('@electric-sql/pglite');

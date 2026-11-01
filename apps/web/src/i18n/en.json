@@ -23,7 +23,12 @@
     "noSnapshotBody": "Recorded data appears here as soon as a snapshot is stored. Until then the map shows stations only.",
     "inIndia": "Corridor only",
     "recentre": "Centre on corridor",
-    "tapTrain": "Tap a train to see why it is late"
+    "tapTrain": "Tap a train to see why it is late",
+    "webglTitle": "The map cannot start on this device",
+    "webglBody": "This browser has no WebGL 2, which the map needs. Everything else on this screen still works: the train list below is complete and carries the same as-of time.",
+    "webglHint": "Chrome: Settings → System → turn on “Use graphics acceleration when available”, then relaunch. Firefox and Edge usually work without it.",
+    "tilesSlow": "Map tiles are not loading (offline, or blocked). Trains are listed below.",
+    "mapLabel": "Corridor map"
   },
   "chips": {
     "all": "All",
@@ -36,8 +41,9 @@
     "aged": "Aged",
     "old": "Old",
     "stale": "Stale data",
-    "staleBody": "This snapshot is over three hours old. The positions are estimates carried forward, not live.",
-    "budgetLimited": "Serving saved data: today's provider budget is used up."
+    "staleBody": "This snapshot is over three hours old. The markers sit exactly where the recording left them, so treat them as history, not as positions now.",
+    "budgetLimited": "Serving saved data: today's provider budget is used up.",
+    "replayBody": "You are looking at a recording. Trains move as the replay clock advances."
   },
   "delay": {
     "ontime": "On time",

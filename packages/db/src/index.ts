@@ -3,6 +3,7 @@
  * One function per query; nothing outside this package writes SQL.
  */
 export * from './sql';
+export * from './connection';
 export * from './migrate';
 export * from './queries/stations';
 export * from './queries/trains';

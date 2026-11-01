@@ -32,7 +32,8 @@
     "check": "npm run typecheck && npm run lint && npm run boundaries && npm run dupes && npm run secrets && npm run test",
     "db:status": "npm run status -w @railpulse/db",
     "ingest:fixtures": "npm run ingest:fixtures -w @railpulse/api",
-    "tokens": "npm run build:css -w @railpulse/ui-tokens"
+    "tokens": "npm run build:css -w @railpulse/ui-tokens",
+    "doctor": "tsx tools/doctor.ts"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",

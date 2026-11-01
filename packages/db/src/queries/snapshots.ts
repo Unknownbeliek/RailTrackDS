@@ -303,6 +303,35 @@ export async function countObservations(sql: Sql, snapshotId: number): Promise<n
   return Number(res.rows[0]?.count ?? 0);
 }
 
+export interface ObservationTotals {
+  snapshots: number;
+  observations: number;
+  stopObservations: number;
+  reasons: number;
+}
+
+/** How much recorded data is actually stored, for `db:status`. */
+export async function observationTotals(sql: Sql): Promise<ObservationTotals> {
+  const res = await sql.query<{
+    snapshots: string;
+    observations: string;
+    stop_observations: string;
+    reasons: string;
+  }>(
+    `SELECT (SELECT count(*) FROM snapshots)::text AS snapshots,
+            (SELECT count(*) FROM train_observations)::text AS observations,
+            (SELECT count(*) FROM stop_observations)::text AS stop_observations,
+            (SELECT count(*) FROM reason_results)::text AS reasons`,
+  );
+  const row = res.rows[0];
+  return {
+    snapshots: Number(row?.snapshots ?? 0),
+    observations: Number(row?.observations ?? 0),
+    stopObservations: Number(row?.stop_observations ?? 0),
+    reasons: Number(row?.reasons ?? 0),
+  };
+}
+
 /** Does this scope have any recorded snapshot at all? (used by admin plan) */
 export async function observationsExist(sql: Sql, scope: string): Promise<boolean> {
   const res = await sql.query<{ exists: boolean }>(

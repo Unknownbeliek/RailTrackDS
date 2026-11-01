@@ -89,7 +89,8 @@ export function SearchPage() {
       ) : null}
 
       {results.data ? (
-        <>
+        <div className="rp-search-results">
+          <div className="rp-search-results__column">
           {results.data.data.trains.length > 0 ? (
             <>
               <SectionTitle>{t('search.trains')}</SectionTitle>
@@ -113,7 +114,9 @@ export function SearchPage() {
               </Card>
             </>
           ) : null}
+          </div>
 
+          <div className="rp-search-results__column">
           {results.data.data.stations.length > 0 ? (
             <>
               <SectionTitle>{t('search.stations')}</SectionTitle>
@@ -137,13 +140,12 @@ export function SearchPage() {
               </Card>
             </>
           ) : null}
+          </div>
 
           {results.data.data.trains.length + results.data.data.stations.length === 0 ? (
-            <div style={{ marginTop: 'var(--rp-space-lg)' }}>
-              <EmptyState title={t('search.noResults', { term: trimmed })} />
-            </div>
+            <EmptyState title={t('search.noResults', { term: trimmed })} />
           ) : null}
-        </>
+        </div>
       ) : null}
     </div>
   );

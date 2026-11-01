@@ -2,8 +2,14 @@
  * One MapView component. Each concern is its own layer: the corridor line,
  * the station dots, the train markers (section 12). A layer takes data and
  * draws it; it computes nothing.
+ *
+ * Degrading honestly: MapLibre needs WebGL 2. If this device or browser cannot
+ * provide it — a VM, a remote session, GPU acceleration switched off — we say so
+ * in words instead of leaving a blank canvas, because everything else on the
+ * screen is still true.
  */
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import maplibregl, { type Map as MapLibreMap, type Marker } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import type { CorridorStation, DelayLevel } from '@railpulse/shared';
@@ -34,6 +40,20 @@ const DELAY_VAR: Record<DelayLevel, string> = {
   major: 'var(--rp-delay-major)',
 };
 
+/** How long we wait for the style before telling the user tiles are slow. */
+const STYLE_WARNING_MS = 8000;
+
+/** One probe, used by the fallback and by the tests. */
+export function supportsWebgl2(): boolean {
+  if (typeof document === 'undefined') return false;
+  try {
+    const canvas = document.createElement('canvas');
+    return Boolean(canvas.getContext('webgl2'));
+  } catch {
+    return false;
+  }
+}
+
 function boundsOf(stations: CorridorStation[]): maplibregl.LngLatBounds | null {
   const points = stations.filter((s) => s.station.lat !== null && s.station.lng !== null);
   if (points.length === 0) return null;
@@ -55,7 +75,7 @@ function lineFeature(stations: CorridorStation[]): GeoJSON.Feature<GeoJSON.LineS
   };
 }
 
-/** Pixels per second are nobody's business, but a triangle must point somewhere. */
+/** A triangle rotated to the direction of travel, coloured by delay. */
 function markerElement(train: MapTrain): HTMLButtonElement {
   const button = document.createElement('button');
   button.type = 'button';
@@ -85,27 +105,58 @@ function markerElement(train: MapTrain): HTMLButtonElement {
 }
 
 export function MapView({ stations, trains, onSelectTrain, fitKey, interactive = true }: MapViewProps) {
+  const { t } = useTranslation();
   const container = useRef<HTMLDivElement | null>(null);
   const map = useRef<MapLibreMap | null>(null);
   const markers = useRef(new Map<string, { marker: Marker; element: HTMLButtonElement }>());
   const stationMarkers = useRef<Marker[]>([]);
   const ready = useRef(false);
+  const [attempt, setAttempt] = useState(0);
+  const [failure, setFailure] = useState<string | null>(null);
+  const [slow, setSlow] = useState(false);
 
-  // The map is created once; everything else is data on top of it.
+  // The map is created once per attempt; everything else is data on top of it.
   useEffect(() => {
     if (!container.current || map.current) return;
-    const instance = new maplibregl.Map({
-      container: container.current,
-      style: baseStyle(),
-      center: [78.5, 27.6],
-      zoom: 6.4,
-      attributionControl: { compact: true },
-      interactive,
-    });
+    setFailure(null);
+    setSlow(false);
+
+    if (!supportsWebgl2()) {
+      setFailure('webgl');
+      return;
+    }
+
+    let instance: MapLibreMap;
+    try {
+      instance = new maplibregl.Map({
+        container: container.current,
+        style: baseStyle(),
+        center: [78.5, 27.6],
+        zoom: 6.4,
+        attributionControl: { compact: true },
+        interactive,
+      });
+    } catch {
+      // MapLibre throws here when WebGL cannot be initialised at all.
+      setFailure('webgl');
+      return;
+    }
     map.current = instance;
+
+    const warningTimer = window.setTimeout(() => {
+      if (!ready.current) setSlow(true);
+    }, STYLE_WARNING_MS);
+
+    // Tile or style problems are reported, never fatal: the local layers below
+    // are drawn from our own data and stay useful.
+    instance.on('error', (event: { error?: Error }) => {
+      const message = event.error?.message ?? 'unknown map error';
+      if (/webgl/i.test(message)) setFailure('webgl');
+    });
 
     instance.on('load', () => {
       ready.current = true;
+      setSlow(false);
       instance.addSource('corridor', {
         type: 'geojson',
         data: lineFeature(stations),
@@ -139,6 +190,7 @@ export function MapView({ stations, trains, onSelectTrain, fitKey, interactive =
 
     const trainMarkers = markers.current;
     return () => {
+      window.clearTimeout(warningTimer);
       trainMarkers.clear();
       stationMarkers.current = [];
       ready.current = false;
@@ -146,9 +198,9 @@ export function MapView({ stations, trains, onSelectTrain, fitKey, interactive =
       map.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [attempt]);
 
-  // Corridor line and station dots follow the data, not the map lifecycle.
+  // Corridor line and station labels follow the data, not the map lifecycle.
   useEffect(() => {
     const instance = map.current;
     if (!instance) return;
@@ -234,7 +286,30 @@ export function MapView({ stations, trains, onSelectTrain, fitKey, interactive =
 
   return (
     <div className="rp-map-wrap">
-      <div ref={container} className="rp-map" aria-label="Corridor map" role="application" />
+      <div ref={container} className="rp-map" aria-label={t('map.mapLabel')} role="application" />
+
+      {failure ? (
+        <div className="rp-map-fallback" role="alert">
+          <p className="rp-map-fallback__title">{t('map.webglTitle')}</p>
+          <p className="rp-map-fallback__body">{t('map.webglBody')}</p>
+          <p className="rp-map-fallback__hint">{t('map.webglHint')}</p>
+          <button
+            type="button"
+            className="rp-button rp-button--small"
+            onClick={() => {
+              setAttempt((value) => value + 1);
+            }}
+          >
+            {t('common.retry')}
+          </button>
+        </div>
+      ) : null}
+
+      {!failure && slow ? (
+        <div className="rp-map-note" role="status">
+          {t('map.tilesSlow')}
+        </div>
+      ) : null}
     </div>
   );
 }
