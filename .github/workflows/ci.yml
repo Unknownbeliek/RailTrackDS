@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [main, ai, 'arena/**']
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Type check
+        run: npm run typecheck
+      - name: Lint
+        run: npm run lint
+      - name: Dependency boundaries (section 8.1)
+        run: npm run boundaries
+      - name: Duplicate code under 3 percent (section 9.2)
+        run: npm run dupes
+      - name: Secret scan (section 13)
+        run: npm run secrets
+      - name: Tests on fixtures only (rule N6)
+        run: npm test
+      - name: Build web app
+        run: npm run build

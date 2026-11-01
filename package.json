@@ -1,0 +1,45 @@
+{
+  "name": "railtrackds",
+  "version": "0.1.0",
+  "private": true,
+  "description": "RailPulse India — Indian trains on a map, with honest labels for how old and how estimated the data is.",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "concurrently -k -n api,web -c blue,green \"npm:dev:api\" \"npm:dev:web\"",
+    "dev:api": "npm run dev -w @railpulse/api",
+    "dev:web": "npm run dev -w @railpulse/web",
+    "build": "npm run build -w @railpulse/web",
+    "start": "npm run start -w @railpulse/api",
+    "db:migrate": "npm run migrate -w @railpulse/db",
+    "db:seed": "npm run seed -w @railpulse/db",
+    "db:reset": "npm run reset -w @railpulse/db",
+    "db:setup": "npm run db:migrate && npm run db:seed",
+    "ingest:static": "npm run ingest:static -w @railpulse/api",
+    "ingest:snapshot": "npm run ingest:snapshot -w @railpulse/api",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc -b tsconfig.build.json",
+    "lint": "eslint .",
+    "boundaries": "depcruise apps packages --config .dependency-cruiser.cjs",
+    "dupes": "jscpd apps packages --config .jscpd.json",
+    "secrets": "node tools/scan-secrets.mjs",
+    "check": "npm run typecheck && npm run lint && npm run boundaries && npm run dupes && npm run secrets && npm run test"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "concurrently": "^9.1.2",
+    "dependency-cruiser": "^16.9.0",
+    "eslint": "^9.17.0",
+    "globals": "^15.14.0",
+    "jscpd": "^4.0.5",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.19.0",
+    "vitest": "^3.0.5"
+  }
+}
