@@ -141,3 +141,49 @@ export async function recentCalls(sql: Sql, limit: number): Promise<ProviderCall
   );
   return res.rows.map(toCall);
 }
+
+export interface LedgerTotals {
+  calls: number;
+  archived: number;
+  failures: number;
+  costAllTime: number;
+  costThisMonth: number;
+  lastCallAt: string | null;
+  methods: string[];
+}
+
+/**
+ * Proof that what the provider returned is on disk: every call keeps its row,
+ * and `archived` counts the ones whose raw payload was stored (section 10).
+ */
+export async function ledgerTotals(sql: Sql, monthStartIso: string): Promise<LedgerTotals> {
+  const res = await sql.query<{
+    calls: string;
+    archived: string;
+    failures: string;
+    cost_all: string;
+    cost_month: string;
+    last_call: Date | string | null;
+    methods: string[] | null;
+  }>(
+    `SELECT count(*)::text AS calls,
+            count(payload)::text AS archived,
+            count(error)::text AS failures,
+            COALESCE(SUM(cost), 0)::text AS cost_all,
+            COALESCE(SUM(CASE WHEN created_at >= $1 THEN cost ELSE 0 END), 0)::text AS cost_month,
+            max(created_at) AS last_call,
+            array_agg(DISTINCT method) AS methods
+     FROM provider_calls`,
+    [monthStartIso],
+  );
+  const row = res.rows[0];
+  return {
+    calls: Number(row?.calls ?? 0),
+    archived: Number(row?.archived ?? 0),
+    failures: Number(row?.failures ?? 0),
+    costAllTime: Number(row?.cost_all ?? 0),
+    costThisMonth: Number(row?.cost_month ?? 0),
+    lastCallAt: row?.last_call ? iso(row.last_call) : null,
+    methods: row?.methods ?? [],
+  };
+}

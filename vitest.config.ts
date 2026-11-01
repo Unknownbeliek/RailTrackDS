@@ -15,6 +15,7 @@ export default defineConfig({
   },
   test: {
     include: ['packages/**/src/**/*.test.ts', 'apps/**/src/**/*.test.{ts,tsx}'],
+    setupFiles: ['./vitest.setup.ts'],
     environment: 'node',
     reporters: ['default'],
     hookTimeout: 60_000,

@@ -22,6 +22,7 @@ Postgres / PGlite  →  API (Fastify)  →  Web app (React + MapLibre)
 npm install
 cp .env.example .env          # optional: the defaults are fixtures mode
 npm run db:setup              # migrate, seed reference data, ingest both fixtures
+npm run doctor                # says what is configured, stored and missing
 npm run dev                   # API on :3001, web on :5173
 ```
 
@@ -36,10 +37,15 @@ Useful commands:
 | `npm run db:setup` | migrate, seed and ingest the recorded snapshots |
 | `npm run db:reset` | drop and recreate the schema |
 | `npm run db:status` | counts and the latest snapshot per corridor |
+| `npm run doctor` | setup check: `.env`, database, stored rows, provider ledger |
 | `npm run tokens` | regenerate `apps/web/src/styles/tokens.css` |
 | `npm run check` | type check, lint, boundaries, duplicate code, secret scan, tests |
 | `npm test` | tests only (fixtures, in-memory database, no network) |
 | `npm run build` | production build of the web app |
+
+Going live with a real key and a managed database is a separate, step-by-step
+guide: **[docs/SETUP.md](docs/SETUP.md)** (which database, where the key goes, how
+to prove that everything fetched was saved).
 
 The admin budget page lives at `/admin` and needs a token:
 
@@ -108,6 +114,12 @@ never import the database or the provider, `packages/domain` stays pure, and
   other),
 - UI tests for the as-of banner, delay pill and reason card, page tests for train
   detail and the map screen.
+
+## Layout
+
+Phone first, and a real desktop layout from 1024 px: the tab bar moves to the
+top, the map keeps the left two thirds and the bottom sheet becomes a fixed
+panel on the right; train detail and search use two columns.
 
 ## Going live
 
