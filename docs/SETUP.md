@@ -101,6 +101,25 @@ with `?sslmode=require` already in it.
    If a migration stalls through the pooler, run `npm run db:migrate` once with
    the **direct** host in `DATABASE_URL`, then put the pooled one back.
 
+**`28P01` — "the server rejected that user and password".** In order:
+
+1. **You rotated the password.** Neon → Connect again and copy a fresh string;
+   the old one stops working the moment the role's password changes. The same
+   applies if you reset it because it appeared in a screenshot.
+2. **The string arrived mangled.** Chat apps and wiki pages escape `&` as
+   `&amp;` and wrap URLs as `[user:pass@host](mailto:…)`. `&amp;` is decoded for
+   you; a `mailto:` wrapper cannot be, so copy the plain string again. Paste
+   only what is inside the quotes on the Neon panel.
+3. **A special character in the password.** `@` → `%40`, `#` → `%23`,
+   `:` → `%3A`, `/` → `%2F`.
+4. **Wrong user for the host.** Supabase's pooler wants
+   `postgres.<project-ref>`, not `postgres`; Neon's user is `neondb_owner` (or
+   whatever the project was created with).
+
+`npm run doctor` prints the user and the **password length**, never the
+password — so a truncated paste (12 characters where the dashboard shows 28) is
+visible without anyone printing the secret.
+
 **"Connection terminated unexpectedly" / ETIMEDOUT?** The TCP connection opens
 and the TLS handshake never finishes. In order of likelihood:
 

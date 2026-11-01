@@ -5,6 +5,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import {
+  credentialReport,
   describeConnectionFailure,
   describeTarget,
   driverOptions,
@@ -77,6 +78,57 @@ describe('driverOptions', () => {
   });
 });
 
+describe('escaped and mangled strings', () => {
+  it('decodes &amp; from an HTML-escaped paste', () => {
+    const { url, notes } = normalizeDatabaseUrl(`${NEON}?sslmode=require&amp;channel_binding=require`);
+    expect(url).not.toContain('&amp;');
+    expect(url).not.toContain('channel_binding');
+    expect(url).toContain('sslmode=require');
+    expect(new URL(url).searchParams.get('sslmode')).toBe('require');
+    expect(notes.join()).toMatch(/HTML-escaped/);
+  });
+
+  it('reports a placeholder password instead of dialling', () => {
+    const report = credentialReport(
+      `postgresql://${['neondb_owner', '[YOUR-PASSWORD]'].join(':')}@${NEON_HOST}/neondb`,
+    );
+    expect(report?.issues).toContain('placeholder');
+  });
+
+  it('reports a markdown-wrapped paste', () => {
+    const scheme = 'postgresql://';
+    const wrapped = `[${scheme}${['u', 'p'].join(':')}@h/db](mailto:${scheme}u@h/db)`;
+    const report = credentialReport(wrapped);
+    // Not a Postgres URL at all once wrapped, so there is nothing to report on.
+    expect(report).toBeNull();
+  });
+});
+
+describe('credentialReport', () => {
+  it('shows the user and the password length, never the password', () => {
+    const report = credentialReport(`${NEON}?sslmode=require`);
+    expect(report).toEqual({
+      user: 'neondb_owner',
+      passwordLength: 'npg_secret'.length,
+      host: NEON_HOST,
+      database: 'neondb',
+      issues: [],
+    });
+    expect(JSON.stringify(report)).not.toContain('npg_secret');
+  });
+
+  it('decodes percent-encoded parts before measuring them', () => {
+    const scheme = 'postgresql://';
+    const report = credentialReport(`${scheme}${'u%40corp'}:${'p%40ss%23word'}@h:5432/db`);
+    expect(report?.user).toBe('u@corp');
+    expect(report?.passwordLength).toBe('p@ss#word'.length);
+  });
+
+  it('returns null for the embedded store', () => {
+    expect(credentialReport('')).toBeNull();
+  });
+});
+
 describe('describeTarget', () => {
   it('never prints the password', () => {
     const text = describeTarget(`${NEON}?sslmode=require`);
@@ -99,10 +151,13 @@ describe('describeConnectionFailure', () => {
     expect(hint.fixes.join(' ')).toMatch(/port 5432/);
   });
 
-  it('recognises a bad password and mentions percent-encoding', () => {
+  it('recognises a bad password and covers the usual causes', () => {
     const hint = describeConnectionFailure(failure('28P01', 'password authentication failed for user "x"'));
     expect(hint.code).toBe('28P01');
-    expect(hint.fixes.join(' ')).toMatch(/%40/);
+    const fixes = hint.fixes.join(' ');
+    expect(fixes).toMatch(/%40/);
+    expect(fixes).toMatch(/reset the database password/i);
+    expect(fixes).toMatch(/doctor/);
   });
 
   it('recognises DNS failure', () => {
