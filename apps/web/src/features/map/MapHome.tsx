@@ -93,7 +93,8 @@ export function MapHome() {
   };
 
   return (
-    <div className="rp-app rp-app--fill">
+    <div className="rp-home">
+      <div className="rp-home__map">
       <div className="rp-map-wrap">
         <MapView
           stations={stations}
@@ -157,6 +158,7 @@ export function MapHome() {
         >
           <span aria-hidden>🛤️</span>
         </button>
+      </div>
       </div>
 
       <Sheet

@@ -754,3 +754,220 @@ a {
     padding: var(--rp-space-xl);
   }
 }
+
+/* ========================================================================
+   Desktop layout (>= 1024px)
+   The app is map-first on phones and map + side panel on wide screens, where
+   the tab bar moves to the top and the bottom sheet becomes a fixed column.
+   ======================================================================== */
+
+.rp-home {
+  position: absolute;
+  inset: 0;
+}
+
+.rp-home__map {
+  position: absolute;
+  inset: 0;
+}
+
+/* The map itself, when WebGL is unavailable, says so instead of going blank. */
+.rp-map-fallback {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(460px, calc(100% - 32px));
+  background: var(--rp-color-surface);
+  border-radius: var(--rp-radius-lg);
+  box-shadow: var(--rp-shadow-card);
+  border-left: 4px solid var(--rp-delay-warn);
+  padding: var(--rp-space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--rp-space-sm);
+  align-items: flex-start;
+}
+
+.rp-map-fallback__title {
+  margin: 0;
+  font-size: var(--rp-font-body);
+  font-weight: var(--rp-font-weight-bold);
+}
+
+.rp-map-fallback__body,
+.rp-map-fallback__hint {
+  margin: 0;
+  font-size: var(--rp-font-body-small);
+  color: var(--rp-color-ink-soft);
+  line-height: 1.45;
+}
+
+.rp-map-fallback__hint {
+  font-size: var(--rp-font-label);
+  color: var(--rp-color-muted);
+}
+
+.rp-map-note {
+  position: absolute;
+  left: var(--rp-space-md);
+  right: var(--rp-space-md);
+  bottom: var(--rp-space-md);
+  background: var(--rp-delay-tint-slight);
+  color: var(--rp-delay-warn);
+  border-radius: var(--rp-radius-md);
+  padding: var(--rp-space-sm) var(--rp-space-md);
+  font-size: var(--rp-font-label);
+  box-shadow: var(--rp-shadow-card);
+}
+
+@media (min-width: 1024px) {
+  /* Top navigation instead of a phone tab bar. */
+  .rp-tabbar {
+    order: -1;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: var(--rp-space-xs);
+    padding: 0 var(--rp-space-xl);
+    border-top: none;
+    border-bottom: 1px solid var(--rp-color-border);
+  }
+
+  .rp-tab {
+    flex-direction: row;
+    gap: var(--rp-space-sm);
+    height: 40px;
+    min-height: 40px;
+    padding: 0 var(--rp-space-md);
+    border-radius: var(--rp-radius-pill);
+    font-size: var(--rp-font-body-small);
+  }
+
+  .rp-tab[aria-current='page'] {
+    background: var(--rp-color-primary-soft);
+  }
+
+  .rp-tab__icon {
+    font-size: 16px;
+  }
+
+  /* Content screens get room, and two columns where it helps. */
+  .rp-screen {
+    max-width: 1120px;
+    padding: var(--rp-space-xl);
+  }
+
+  .rp-sheet {
+    position: static;
+    flex: 0 0 420px;
+    width: 420px;
+    height: 100% !important;
+    border-radius: 0;
+    box-shadow: -1px 0 0 var(--rp-color-border);
+    margin: 0;
+    max-width: none;
+  }
+
+  .rp-sheet__handle {
+    display: none;
+  }
+
+  .rp-sheet__content {
+    flex: 1;
+    padding-left: var(--rp-space-lg);
+    padding-right: var(--rp-space-lg);
+  }
+
+  .rp-home {
+    display: flex;
+    align-items: stretch;
+  }
+
+  .rp-home__map {
+    position: relative;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .rp-map-buttons {
+    bottom: var(--rp-space-xl);
+  }
+
+  .rp-map-overlay > * {
+    max-width: 620px;
+  }
+
+  /* Train detail: card and timetable on the left, reason and nearby on the right. */
+  .rp-detail {
+    display: grid;
+    gap: var(--rp-space-md);
+    grid-template-columns: minmax(0, 1fr) 380px;
+    align-items: start;
+  }
+
+  .rp-detail__card {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .rp-detail__stations {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .rp-detail__aside {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+
+  .rp-detail__history {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
+
+  /* Search results side by side. */
+  .rp-search-results {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--rp-space-lg);
+    align-items: start;
+  }
+
+  .rp-search-results > .rp-search-results__column > .rp-card:first-of-type {
+    margin-top: 0;
+  }
+
+  .rp-replay-bar {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    width: min(560px, calc(100% - 48px));
+    border-radius: var(--rp-radius-lg);
+    margin-bottom: var(--rp-space-lg);
+  }
+
+  .rp-tiles {
+    gap: var(--rp-space-md);
+  }
+
+  .rp-empty {
+    padding: var(--rp-space-xxl);
+  }
+}
+
+@media (min-width: 1440px) {
+  .rp-screen {
+    max-width: 1280px;
+  }
+
+  .rp-sheet {
+    flex: 0 0 460px;
+    width: 460px;
+  }
+
+  .rp-detail {
+    grid-template-columns: minmax(0, 1fr) 420px;
+  }
+}

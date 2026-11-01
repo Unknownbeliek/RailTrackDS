@@ -70,6 +70,8 @@ export function TrainDetailPage() {
 
       <AsOfBanner meta={meta} now={now} language={language} />
 
+      <div className="rp-detail" style={{ marginTop: 'var(--rp-space-md)' }}>
+      <div className="rp-detail__card">
       <Card className="rp-card" as="section">
         <p className="rp-eyebrow">
           {data.train.number} · {data.train.category}
@@ -176,10 +178,10 @@ export function TrainDetailPage() {
           </div>
         ) : null}
       </Card>
-
-      <div style={{ marginTop: 'var(--rp-space-md)' }}>
-        <ReasonCard reason={data.reason} available={data.reasonAvailable} />
       </div>
+
+      <div className="rp-detail__aside">
+        <ReasonCard reason={data.reason} available={data.reasonAvailable} />
 
       <SectionTitle
         hint={
@@ -226,7 +228,9 @@ export function TrainDetailPage() {
           </div>
         )}
       </Card>
+      </div>
 
+      <div className="rp-detail__stations">
       <SectionTitle>{t('train.stations')}</SectionTitle>
       <Card>
         <ol className="rp-list" style={{ listStyle: 'none', margin: 0, padding: 0 }}>
@@ -240,7 +244,9 @@ export function TrainDetailPage() {
           ))}
         </ol>
       </Card>
+      </div>
 
+      <div className="rp-detail__history">
       <SectionTitle>{t('history.title')}</SectionTitle>
       <Card>
         {data.history.length === 0 ? (
@@ -266,6 +272,8 @@ export function TrainDetailPage() {
           </table>
         )}
       </Card>
+      </div>
+      </div>
     </div>
   );
 }
