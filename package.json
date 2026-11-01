@@ -2,7 +2,7 @@
   "name": "railtrackds",
   "version": "0.1.0",
   "private": true,
-  "description": "RailPulse India — Indian trains on a map, with honest labels for how old and how estimated the data is.",
+  "description": "RailPulse India \u2014 Indian trains on a map, with honest labels for how old and how estimated the data is.",
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -19,7 +19,7 @@
     "db:migrate": "npm run migrate -w @railpulse/db",
     "db:seed": "npm run seed -w @railpulse/db",
     "db:reset": "npm run reset -w @railpulse/db",
-    "db:setup": "npm run db:migrate && npm run db:seed",
+    "db:setup": "npm run db:migrate && npm run db:seed && npm run ingest:fixtures",
     "ingest:static": "npm run ingest:static -w @railpulse/api",
     "ingest:snapshot": "npm run ingest:snapshot -w @railpulse/api",
     "test": "vitest run",
@@ -29,7 +29,9 @@
     "boundaries": "depcruise apps packages --config .dependency-cruiser.cjs",
     "dupes": "jscpd apps packages --config .jscpd.json",
     "secrets": "node tools/scan-secrets.mjs",
-    "check": "npm run typecheck && npm run lint && npm run boundaries && npm run dupes && npm run secrets && npm run test"
+    "check": "npm run typecheck && npm run lint && npm run boundaries && npm run dupes && npm run secrets && npm run test",
+    "db:status": "npm run status -w @railpulse/db",
+    "ingest:fixtures": "npm run ingest:fixtures -w @railpulse/api"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
@@ -40,6 +42,7 @@
     "jscpd": "^4.0.5",
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.19.0",
-    "vitest": "^3.0.5"
+    "vitest": "^3.0.5",
+    "tsx": "^4.19.2"
   }
 }

@@ -32,7 +32,14 @@ export default tseslint.config(
     },
   },
   {
-    files: ['tools/**/*.mjs', '**/*.config.{js,ts}', 'scripts/**'],
+    files: ['tools/**/*.{mjs,ts}', '**/*.config.{js,ts}', 'scripts/**', '**/*.test.ts', 'apps/api/src/jobs/**'],
+    languageOptions: { globals: { ...globals.node } },
     rules: { 'no-console': 'off' },
+  },
+  {
+    // The dependency-cruiser config is CommonJS by design.
+    files: ['**/*.cjs'],
+    languageOptions: { globals: { ...globals.node }, sourceType: 'commonjs' },
+    rules: { 'no-undef': 'off' },
   },
 );
