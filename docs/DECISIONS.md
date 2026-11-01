@@ -383,3 +383,50 @@ adjustments are invisible, so they would not know to do it; `uselibpqcompat=true
 **Consequences:** tests cover every adjustment and error mapping without any
 network access. A blocked port 5432 is now a named diagnosis rather than a
 stack trace.
+
+---
+
+## D-018 MapLibre is loaded lazily, and nothing can blank the whole app
+Date: 2026-11-01
+
+**Context:** On a Windows machine the app rendered as a pure white page:
+
+```
+Uncaught SyntaxError: The requested module '/node_modules/.vite/deps/maplibre-gl.js?v=…'
+does not provide an export named 'default' (at MapView.tsx:13:8)
+```
+
+Two failures in one. maplibre-gl publishes a single UMD bundle (`main` only, no
+`module` or `exports` field), so whether the pre-bundled module exposes
+`default`, named exports, or both depends on how Vite optimised it — a static
+`import maplibregl from 'maplibre-gl'` therefore works on one machine and not on
+the next. And because it is a *static* import in a screen that everything else
+is routed through, one interop mismatch removed the entire React tree: no tabs,
+no message, nothing.
+
+**Decision:** maplibre-gl is imported only through `apps/web/src/lib/map/maplibre.ts`.
+
+- `loadMaplibre()` performs a dynamic `import()` and normalises whatever comes
+  back — `{ default: ns }`, a plain namespace, or a function-style module — by
+  looking for a `Map` constructor. A missing export reads as `undefined`
+  (module namespaces can be proxies that throw, so property access is guarded).
+- The result, including the failure, is cached; a rejection clears the cache so
+  the Retry button retries for real.
+- `MapView` awaits the loader inside its effect, gains a `generation` counter so
+  the data effects re-run when the instance appears, and shows a
+  library-specific fallback ("the map library failed to load") that is distinct
+  from the WebGL one.
+- An `ErrorBoundary` at the root of the tree replaces any future render crash
+  with a card that names the error, says the data is unaffected, and offers
+  Retry and Reload. A white page is no longer a possible outcome.
+
+**Alternatives:** `import * as maplibregl` — still wrong for a default-only
+module; upgrading to maplibre-gl 5 (which ships a real `exports` map) — worth
+doing eventually, but it does not fix the blast radius; a `try/catch` around the
+static import — not possible, imports are hoisted.
+
+**Consequences:** the initial bundle drops from ~1.19 MB to ~388 KB because the
+803 KB map library is now its own chunk, loaded when a map is actually shown.
+Both shapes are covered by tests that mock the module namespace.
+
+---

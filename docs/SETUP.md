@@ -101,6 +101,25 @@ with `?sslmode=require` already in it.
    If a migration stalls through the pooler, run `npm run db:migrate` once with
    the **direct** host in `DATABASE_URL`, then put the pooled one back.
 
+**`28P01` — "the server rejected that user and password".** In order:
+
+1. **You rotated the password.** Neon → Connect again and copy a fresh string;
+   the old one stops working the moment the role's password changes. The same
+   applies if you reset it because it appeared in a screenshot.
+2. **The string arrived mangled.** Chat apps and wiki pages escape `&` as
+   `&amp;` and wrap URLs as `[user:pass@host](mailto:…)`. `&amp;` is decoded for
+   you; a `mailto:` wrapper cannot be, so copy the plain string again. Paste
+   only what is inside the quotes on the Neon panel.
+3. **A special character in the password.** `@` → `%40`, `#` → `%23`,
+   `:` → `%3A`, `/` → `%2F`.
+4. **Wrong user for the host.** Supabase's pooler wants
+   `postgres.<project-ref>`, not `postgres`; Neon's user is `neondb_owner` (or
+   whatever the project was created with).
+
+`npm run doctor` prints the user and the **password length**, never the
+password — so a truncated paste (12 characters where the dashboard shows 28) is
+visible without anyone printing the secret.
+
 **"Connection terminated unexpectedly" / ETIMEDOUT?** The TCP connection opens
 and the TLS handshake never finishes. In order of likelihood:
 
@@ -284,6 +303,7 @@ npm run build     # production web build
 | `timeout expired` connecting to Neon/Supabase | IPv6-only network: use the pooled host, or add `?sslmode=require` |
 | `channel_binding` looks unsupported | It is: it is a psql option and is dropped automatically. Keep it or delete it, same result |
 | Map is blank but the list works | WebGL 2 is unavailable — the map now says so and explains the fix |
+| White page and `Uncaught SyntaxError: … does not provide an export named 'default'` | A stale Vite dependency cache. `rm -rf apps/web/node_modules/.vite` (or `rm -rf node_modules/.vite`) and reload. The app no longer goes blank when this happens: the map library is loaded lazily, so the rest of the screen still renders |
 | `EADDRINUSE` on 3001/5173 | `lsof -ti:3001 \| xargs kill` |
 | Two processes on one `.data/pglite` | stop the other process, or `rm -rf .data && npm run db:setup` |
 

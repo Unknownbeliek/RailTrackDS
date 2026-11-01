@@ -9,6 +9,7 @@
 import path from 'node:path';
 import {
   countStations,
+  credentialReport,
   describeConnectionFailure,
   describeTarget,
   normalizeDatabaseUrl,
@@ -82,6 +83,34 @@ async function main(): Promise<void> {
     : `embedded PGlite at ${repoPath(config.dataDir)}`;
   ok('target', target);
   for (const note of normalized.notes) warn('connection string', note);
+
+  // Who the URL claims to be. The password is reduced to a length so a
+  // truncated paste is visible without the secret ever being printed.
+  const credentials = credentialReport(normalized.url);
+  if (credentials) {
+    ok('credentials', `user ${credentials.user}, password ${credentials.passwordLength} chars`);
+    ok('database name', credentials.database || '(none in the URL)');
+    for (const issue of credentials.issues) {
+      warn(
+        issue === 'placeholder' ? 'password looks fake' : 'URL looks wrapped',
+        issue === 'placeholder'
+          ? 'it contains …, [] or YOUR-PASSWORD — copy the real string from the dashboard'
+          : 'it looks like [user:pass@host](mailto:…) — paste the plain string',
+      );
+    }
+    if (!normalized.url.includes('sslmode')) {
+      warn('tls', 'no sslmode in the string; hosted Postgres will refuse the connection');
+    }
+  }
+
+  if (credentials?.issues.length) {
+    // No point dialling: the server will reject this, and the timeout-style
+    // message that follows would send the user looking at firewalls.
+    bad('database', 'not attempted — fix the connection string above first');
+    console.log('\n  Neon: Connect → copy the string again (the password is only shown there).');
+    console.log('  Supabase: Settings → Database → Connection string → URI.');
+    return;
+  }
 
   let sql: Sql | null = null;
   try {

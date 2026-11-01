@@ -971,3 +971,42 @@ a {
     grid-template-columns: minmax(0, 1fr) 420px;
   }
 }
+
+/* Crash report: replaces the previous blank page. Same card language as the rest. */
+.rp-crash {
+  margin: var(--rp-space-xl) auto;
+  max-width: 520px;
+  padding: var(--rp-space-lg);
+  border: 1px solid var(--rp-color-border);
+  border-radius: var(--rp-radius-lg);
+  background: var(--rp-color-surface);
+  box-shadow: var(--rp-shadow-card);
+}
+
+.rp-crash__title {
+  margin: 0 0 var(--rp-space-sm);
+  font-size: var(--rp-font-title);
+  font-weight: 600;
+}
+
+.rp-crash__body {
+  margin: 0 0 var(--rp-space-md);
+  color: var(--rp-color-muted);
+}
+
+.rp-crash__detail {
+  margin: 0 0 var(--rp-space-lg);
+  padding: var(--rp-space-sm) var(--rp-space-md);
+  border-radius: var(--rp-radius-md);
+  background: var(--rp-color-page);
+  color: var(--rp-color-muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: var(--rp-font-label-small);
+  overflow-wrap: anywhere;
+}
+
+.rp-crash__actions {
+  display: flex;
+  gap: var(--rp-space-sm);
+  flex-wrap: wrap;
+}

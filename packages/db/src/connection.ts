@@ -40,8 +40,15 @@ export function isPostgresUrl(raw: string): boolean {
 }
 
 export function normalizeDatabaseUrl(raw: string): NormalizedUrl {
-  const trimmed = raw.trim().replace(/^["']|["']$/g, '');
-  if (!isPostgresUrl(trimmed)) return { url: trimmed, notes: [] };
+  const notes: string[] = [];
+  // A dashboard string pasted through a chat window or a wiki often arrives
+  // HTML-escaped: `&amp;` instead of `&`. Undo that, since it is unambiguous.
+  let trimmed = raw.trim().replace(/^["']|["']$/g, '');
+  if (trimmed.includes('&amp;')) {
+    trimmed = trimmed.replace(/&amp;/g, '&');
+    notes.push('decoded &amp; to & (the string was HTML-escaped by whatever it was copied from)');
+  }
+  if (!isPostgresUrl(trimmed)) return { url: trimmed, notes };
 
   let parsed: URL;
   try {
@@ -49,8 +56,6 @@ export function normalizeDatabaseUrl(raw: string): NormalizedUrl {
   } catch {
     return { url: trimmed, notes: ['the URL did not parse as a URL — check for a stray space or quote'] };
   }
-
-  const notes: string[] = [];
 
   if (parsed.searchParams.has('channel_binding')) {
     parsed.searchParams.delete('channel_binding');
@@ -68,7 +73,63 @@ export function normalizeDatabaseUrl(raw: string): NormalizedUrl {
     notes.push('pooled host: good for a long-running API; use the direct host for migrations if they stall');
   }
 
+  const report = credentialReport(parsed.toString());
+  if (report?.issues.includes('placeholder')) {
+    notes.push('the password looks like a placeholder (… or [ ] or YOUR-PASSWORD), not a real one');
+  }
+  if (report?.issues.includes('wrapped')) {
+    notes.push('the URL looks wrapped in markdown ([…](mailto:…)); copy the plain string instead');
+  }
+
   return { url: parsed.toString(), notes };
+}
+
+export interface CredentialReport {
+  user: string;
+  /** Length in characters. The password itself is never returned. */
+  passwordLength: number;
+  host: string;
+  database: string;
+  /** 'placeholder' or 'wrapped' when the string cannot be a real credential. */
+  issues: Array<'placeholder' | 'wrapped'>;
+}
+
+/**
+ * What the URL claims to be, with the secret reduced to a length.
+ *
+ * The length is the useful part: a Neon password that arrives as 12 characters
+ * when the dashboard shows 28 is a truncated paste, and "wrong password" from
+ * the server does not tell you that.
+ */
+export function credentialReport(raw: string): CredentialReport | null {
+  if (!isPostgresUrl(raw)) return null;
+  let parsed: URL;
+  try {
+    parsed = new URL(raw.trim().replace(/^["']|["']$/g, ''));
+  } catch {
+    return null;
+  }
+  const decode = (value: string) => {
+    try {
+      return decodeURIComponent(value);
+    } catch {
+      return value;
+    }
+  };
+  const user = decode(parsed.username);
+  const password = decode(parsed.password);
+  const issues: CredentialReport['issues'] = [];
+  if (/\[|\]|YOUR-?PASSWORD|^…+$|^\.\.\.$/.test(password) || password.includes('…')) {
+    issues.push('placeholder');
+  }
+  if (/\]\(mailto:|\]\(http/.test(raw) || parsed.hostname === '') issues.push('wrapped');
+  return {
+    user,
+    passwordLength: password.length,
+    host: parsed.hostname,
+    database: parsed.pathname.replace(/^\//, ''),
+    issues,
+  };
 }
 
 export interface ConnectionHint {
@@ -116,10 +177,13 @@ const HINTS: Array<{ match: RegExp; hint: ConnectionHint }> = [
     match: /28P01|password authentication failed/i,
     hint: {
       code: '28P01',
-      message: 'wrong user or password',
+      message: 'the server rejected that user and password',
       fixes: [
-        'Special characters in the password must be percent-encoded: @ becomes %40, # becomes %23',
-        'In Neon press Connect again and copy the string; the password is only shown there',
+        'If you reset the database password, every old connection string stops working — copy a new one',
+        'Paste only the plain string: `[user:pass@host](mailto:…)` and `&amp;` come from chat and wiki pages',
+        'Special characters must be percent-encoded: @ becomes %40, # becomes %23, : becomes %3A',
+        'On Neon press Connect again; on Supabase the pooled user is postgres.<project-ref>',
+        'Check `npm run doctor`: it prints the user and the password length, never the password',
       ],
     },
   },
