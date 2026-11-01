@@ -27,3 +27,10 @@ if (typeof window !== 'undefined') {
     });
   }
 }
+
+// jsdom has no canvas backend and logs "Not implemented: getContext" as an
+// error for every call. Returning null is the truthful answer — no WebGL here —
+// and it keeps the output readable. Individual tests can still spy on it.
+if (typeof HTMLCanvasElement !== 'undefined') {
+  HTMLCanvasElement.prototype.getContext = (() => null) as typeof HTMLCanvasElement.prototype.getContext;
+}

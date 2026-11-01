@@ -28,7 +28,10 @@
     "webglBody": "This browser has no WebGL 2, which the map needs. Everything else on this screen still works: the train list below is complete and carries the same as-of time.",
     "webglHint": "Chrome: Settings → System → turn on “Use graphics acceleration when available”, then relaunch. Firefox and Edge usually work without it.",
     "tilesSlow": "Map tiles are not loading (offline, or blocked). Trains are listed below.",
-    "mapLabel": "Corridor map"
+    "mapLabel": "Corridor map",
+    "libraryTitle": "The map could not start",
+    "libraryBody": "The map library failed to load, which is a problem with this build, not with the trains. Everything below is still live.",
+    "libraryHint": "Reload the page. If it keeps happening, clear the browser cache and reload."
   },
   "chips": {
     "all": "All",
@@ -163,5 +166,12 @@
     "language": "हिन्दी",
     "close": "Close",
     "km": "km"
+  },
+  "crash": {
+    "title": "Something on this screen broke",
+    "body": "The data is unaffected: nothing was lost. Try again, or reload the page.",
+    "detail": "Details for a bug report",
+    "retry": "Try again",
+    "reload": "Reload the page"
   }
 }

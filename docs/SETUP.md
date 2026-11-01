@@ -284,6 +284,7 @@ npm run build     # production web build
 | `timeout expired` connecting to Neon/Supabase | IPv6-only network: use the pooled host, or add `?sslmode=require` |
 | `channel_binding` looks unsupported | It is: it is a psql option and is dropped automatically. Keep it or delete it, same result |
 | Map is blank but the list works | WebGL 2 is unavailable — the map now says so and explains the fix |
+| White page and `Uncaught SyntaxError: … does not provide an export named 'default'` | A stale Vite dependency cache. `rm -rf apps/web/node_modules/.vite` (or `rm -rf node_modules/.vite`) and reload. The app no longer goes blank when this happens: the map library is loaded lazily, so the rest of the screen still renders |
 | `EADDRINUSE` on 3001/5173 | `lsof -ti:3001 \| xargs kill` |
 | Two processes on one `.data/pglite` | stop the other process, or `rm -rf .data && npm run db:setup` |
 

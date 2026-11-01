@@ -3,16 +3,20 @@
  * the station dots, the train markers (section 12). A layer takes data and
  * draws it; it computes nothing.
  *
- * Degrading honestly: MapLibre needs WebGL 2. If this device or browser cannot
- * provide it — a VM, a remote session, GPU acceleration switched off — we say so
- * in words instead of leaving a blank canvas, because everything else on the
- * screen is still true.
+ * Degrading honestly, twice over:
+ *
+ * - MapLibre needs WebGL 2. If this device or browser cannot provide it — a VM,
+ *   a remote session, GPU acceleration switched off — we say so in words
+ *   instead of leaving a blank canvas, because everything else is still true.
+ * - MapLibre is loaded lazily through `./maplibre`, so a library that fails to
+ *   load (interop, blocked asset, bad cache) costs the user a map, not the app.
  */
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import maplibregl, { type Map as MapLibreMap, type Marker } from 'maplibre-gl';
+import type { Map as MapLibreMap, Marker } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import type { CorridorStation, DelayLevel } from '@railpulse/shared';
+import { loadMaplibre, type MaplibreModule } from './maplibre';
 import { baseStyle, corridorPaint } from './style';
 
 export interface MapTrain {
@@ -54,14 +58,26 @@ export function supportsWebgl2(): boolean {
   }
 }
 
-function boundsOf(stations: CorridorStation[]): maplibregl.LngLatBounds | null {
+/** `[[west, south], [east, north]]`, or null when nothing has coordinates. */
+function boundsOf(stations: CorridorStation[]): [[number, number], [number, number]] | null {
   const points = stations.filter((s) => s.station.lat !== null && s.station.lng !== null);
   if (points.length === 0) return null;
-  const bounds = new maplibregl.LngLatBounds();
+  let west = Infinity;
+  let south = Infinity;
+  let east = -Infinity;
+  let north = -Infinity;
   for (const point of points) {
-    bounds.extend([point.station.lng as number, point.station.lat as number]);
+    const lng = point.station.lng as number;
+    const lat = point.station.lat as number;
+    if (lng < west) west = lng;
+    if (lng > east) east = lng;
+    if (lat < south) south = lat;
+    if (lat > north) north = lat;
   }
-  return bounds;
+  return [
+    [west, south],
+    [east, north],
+  ];
 }
 
 function lineFeature(stations: CorridorStation[]): GeoJSON.Feature<GeoJSON.LineString> {
@@ -104,15 +120,21 @@ function markerElement(train: MapTrain): HTMLButtonElement {
   return button;
 }
 
+type FailureKind = 'webgl' | 'library' | null;
+
 export function MapView({ stations, trains, onSelectTrain, fitKey, interactive = true }: MapViewProps) {
   const { t } = useTranslation();
   const container = useRef<HTMLDivElement | null>(null);
   const map = useRef<MapLibreMap | null>(null);
+  const lib = useRef<MaplibreModule | null>(null);
   const markers = useRef(new Map<string, { marker: Marker; element: HTMLButtonElement }>());
   const stationMarkers = useRef<Marker[]>([]);
   const ready = useRef(false);
   const [attempt, setAttempt] = useState(0);
-  const [failure, setFailure] = useState<string | null>(null);
+  // Bumped when an instance appears, so the data effects re-run against it
+  // (the library arrives asynchronously, after their first pass).
+  const [generation, setGeneration] = useState(0);
+  const [failure, setFailure] = useState<FailureKind>(null);
   const [slow, setSlow] = useState(false);
 
   // The map is created once per attempt; everything else is data on top of it.
@@ -126,75 +148,97 @@ export function MapView({ stations, trains, onSelectTrain, fitKey, interactive =
       return;
     }
 
-    let instance: MapLibreMap;
-    try {
-      instance = new maplibregl.Map({
-        container: container.current,
-        style: baseStyle(),
-        center: [78.5, 27.6],
-        zoom: 6.4,
-        attributionControl: { compact: true },
-        interactive,
-      });
-    } catch {
-      // MapLibre throws here when WebGL cannot be initialised at all.
-      setFailure('webgl');
-      return;
-    }
-    map.current = instance;
+    let cancelled = false;
+    let instance: MapLibreMap | undefined;
+    let warningTimer: number | undefined;
 
-    const warningTimer = window.setTimeout(() => {
-      if (!ready.current) setSlow(true);
-    }, STYLE_WARNING_MS);
+    const start = async () => {
+      let maplibregl: MaplibreModule;
+      try {
+        maplibregl = await loadMaplibre();
+      } catch {
+        if (!cancelled) setFailure('library');
+        return;
+      }
+      if (cancelled || !container.current) return;
+      lib.current = maplibregl;
 
-    // Tile or style problems are reported, never fatal: the local layers below
-    // are drawn from our own data and stay useful.
-    instance.on('error', (event: { error?: Error }) => {
-      const message = event.error?.message ?? 'unknown map error';
-      if (/webgl/i.test(message)) setFailure('webgl');
-    });
+      try {
+        instance = new maplibregl.Map({
+          container: container.current,
+          style: baseStyle(),
+          center: [78.5, 27.6],
+          zoom: 6.4,
+          attributionControl: { compact: true },
+          interactive,
+        });
+      } catch {
+        // MapLibre throws here when WebGL cannot be initialised at all.
+        if (!cancelled) setFailure('webgl');
+        return;
+      }
+      map.current = instance;
+      setGeneration((value) => value + 1);
 
-    instance.on('load', () => {
-      ready.current = true;
-      setSlow(false);
-      instance.addSource('corridor', {
-        type: 'geojson',
-        data: lineFeature(stations),
-      });
-      instance.addLayer({
-        id: 'corridor-halo',
-        type: 'line',
-        source: 'corridor',
-        paint: {
-          'line-color': corridorPaint.halo,
-          'line-width': 8,
-          'line-opacity': 0.9,
-        },
-        layout: { 'line-cap': 'round', 'line-join': 'round' },
-      });
-      instance.addLayer({
-        id: 'corridor-line',
-        type: 'line',
-        source: 'corridor',
-        paint: {
-          'line-color': corridorPaint.line,
-          'line-width': 3,
-          'line-dasharray': [2, 1.4],
-        },
-        layout: { 'line-cap': 'round', 'line-join': 'round' },
+      warningTimer = window.setTimeout(() => {
+        if (!ready.current) setSlow(true);
+      }, STYLE_WARNING_MS);
+
+      // Tile or style problems are reported, never fatal: the local layers below
+      // are drawn from our own data and stay useful.
+      instance.on('error', (event: { error?: Error }) => {
+        const message = event.error?.message ?? 'unknown map error';
+        if (/webgl/i.test(message)) setFailure('webgl');
       });
 
-      const bounds = boundsOf(stations);
-      if (bounds) instance.fitBounds(bounds, { padding: 56, duration: 0 });
-    });
+      instance.on('load', () => {
+        if (!instance) return;
+        ready.current = true;
+        setSlow(false);
+        if (!instance.getSource('corridor')) {
+          instance.addSource('corridor', {
+            type: 'geojson',
+            data: lineFeature(stations),
+          });
+          instance.addLayer({
+            id: 'corridor-halo',
+            type: 'line',
+            source: 'corridor',
+            paint: {
+              'line-color': corridorPaint.halo,
+              'line-width': 8,
+              'line-opacity': 0.9,
+            },
+            layout: { 'line-cap': 'round', 'line-join': 'round' },
+          });
+          instance.addLayer({
+            id: 'corridor-line',
+            type: 'line',
+            source: 'corridor',
+            paint: {
+              'line-color': corridorPaint.line,
+              'line-width': 3,
+              'line-dasharray': [2, 1.4],
+            },
+            layout: { 'line-cap': 'round', 'line-join': 'round' },
+          });
+        }
+
+        const bounds = boundsOf(stations);
+        if (bounds) instance.fitBounds(bounds, { padding: 56, duration: 0 });
+      });
+    };
+
+    void start();
 
     const trainMarkers = markers.current;
     return () => {
-      window.clearTimeout(warningTimer);
+      cancelled = true;
+      if (warningTimer) window.clearTimeout(warningTimer);
       trainMarkers.clear();
       stationMarkers.current = [];
       ready.current = false;
-      instance.remove();
+      instance?.remove();
       map.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -203,7 +247,8 @@ export function MapView({ stations, trains, onSelectTrain, fitKey, interactive =
   // Corridor line and station labels follow the data, not the map lifecycle.
   useEffect(() => {
     const instance = map.current;
-    if (!instance) return;
+    const maplibregl = lib.current;
+    if (!instance || !maplibregl) return;
 
     const apply = () => {
       const source = instance.getSource('corridor') as maplibregl.GeoJSONSource | undefined;
@@ -224,12 +269,13 @@ export function MapView({ stations, trains, onSelectTrain, fitKey, interactive =
 
     if (ready.current) apply();
     else instance.once('load', apply);
-  }, [stations]);
+  }, [stations, generation]);
 
   // Train markers: moved, never recreated, so the triangle glides.
   useEffect(() => {
     const instance = map.current;
-    if (!instance) return;
+    const maplibregl = lib.current;
+    if (!instance || !maplibregl) return;
 
     const apply = () => {
       const seen = new Set<string>();
@@ -271,7 +317,7 @@ export function MapView({ stations, trains, onSelectTrain, fitKey, interactive =
 
     if (ready.current) apply();
     else instance.once('load', apply);
-  }, [trains, onSelectTrain]);
+  }, [trains, onSelectTrain, generation]);
 
   // Re-fit when the corridor changes.
   useEffect(() => {
@@ -282,7 +328,16 @@ export function MapView({ stations, trains, onSelectTrain, fitKey, interactive =
     const run = () => instance.fitBounds(bounds, { padding: 56, duration: 600 });
     if (ready.current) run();
     else instance.once('load', run);
-  }, [fitKey, stations]);
+  }, [fitKey, stations, generation]);
+
+  const copy =
+    failure === 'library'
+      ? {
+          title: t('map.libraryTitle'),
+          body: t('map.libraryBody'),
+          hint: t('map.libraryHint'),
+        }
+      : { title: t('map.webglTitle'), body: t('map.webglBody'), hint: t('map.webglHint') };
 
   return (
     <div className="rp-map-wrap">
@@ -290,9 +345,9 @@ export function MapView({ stations, trains, onSelectTrain, fitKey, interactive =
 
       {failure ? (
         <div className="rp-map-fallback" role="alert">
-          <p className="rp-map-fallback__title">{t('map.webglTitle')}</p>
-          <p className="rp-map-fallback__body">{t('map.webglBody')}</p>
-          <p className="rp-map-fallback__hint">{t('map.webglHint')}</p>
+          <p className="rp-map-fallback__title">{copy.title}</p>
+          <p className="rp-map-fallback__body">{copy.body}</p>
+          <p className="rp-map-fallback__hint">{copy.hint}</p>
           <button
             type="button"
             className="rp-button rp-button--small"
