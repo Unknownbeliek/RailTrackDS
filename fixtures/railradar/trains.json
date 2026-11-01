@@ -1,0 +1,209 @@
+{
+  "success": true,
+  "data": {
+    "trains": [
+      {
+        "number": "12301",
+        "name": "Howrah Rajdhani Express",
+        "nameHi": "हावड़ा राजधानी एक्सप्रेस",
+        "category": "RAJ",
+        "type": "RAJ",
+        "sourceCode": "NDLS",
+        "destinationCode": "CNB",
+        "daysOfRun": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      {
+        "number": "12302",
+        "name": "New Delhi Rajdhani Express",
+        "nameHi": "नई दिल्ली राजधानी एक्सप्रेस",
+        "category": "RAJ",
+        "type": "RAJ",
+        "sourceCode": "CNB",
+        "destinationCode": "NDLS",
+        "daysOfRun": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      {
+        "number": "12004",
+        "name": "Lucknow Shatabdi Express",
+        "nameHi": "लखनऊ शताब्दी एक्सप्रेस",
+        "category": "SHATABDI",
+        "type": "SHATABDI",
+        "sourceCode": "NDLS",
+        "destinationCode": "CNB",
+        "daysOfRun": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      {
+        "number": "12002",
+        "name": "Bhopal Shatabdi Express",
+        "nameHi": "भोपाल शताब्दी एक्सप्रेस",
+        "category": "SHATABDI",
+        "type": "SHATABDI",
+        "sourceCode": "NDLS",
+        "destinationCode": "CNB",
+        "daysOfRun": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      {
+        "number": "12559",
+        "name": "Shiv Ganga Express",
+        "nameHi": "शिव गंगा एक्सप्रेस",
+        "category": "SF",
+        "type": "SF",
+        "sourceCode": "NDLS",
+        "destinationCode": "CNB",
+        "daysOfRun": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      {
+        "number": "12451",
+        "name": "Shram Shakti Express",
+        "nameHi": "श्रम शक्ति एक्सप्रेस",
+        "category": "SF",
+        "type": "SF",
+        "sourceCode": "NDLS",
+        "destinationCode": "CNB",
+        "daysOfRun": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      {
+        "number": "12801",
+        "name": "Purushottam Express",
+        "nameHi": "पुरुषोत्तम एक्सप्रेस",
+        "category": "SF",
+        "type": "SF",
+        "sourceCode": "NDLS",
+        "destinationCode": "CNB",
+        "daysOfRun": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      {
+        "number": "64101",
+        "name": "Kanpur MEMU",
+        "nameHi": "कानपुर मेमू",
+        "category": "MEMU",
+        "type": "MEMU",
+        "sourceCode": "NDLS",
+        "destinationCode": "CNB",
+        "daysOfRun": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      {
+        "number": "12391",
+        "name": "Shramjeevi Express",
+        "nameHi": "श्रमजीवी एक्सप्रेस",
+        "category": "SF",
+        "type": "SF",
+        "sourceCode": "CNB",
+        "destinationCode": "NDLS",
+        "daysOfRun": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      {
+        "number": "12488",
+        "name": "Seemanchal Express",
+        "nameHi": "सीमांचल एक्सप्रेस",
+        "category": "SF",
+        "type": "SF",
+        "sourceCode": "CNB",
+        "destinationCode": "NDLS",
+        "daysOfRun": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      {
+        "number": "14217",
+        "name": "Unchahar Express",
+        "nameHi": "उंचाहार एक्सप्रेस",
+        "category": "EXPRESS",
+        "type": "EXPRESS",
+        "sourceCode": "CNB",
+        "destinationCode": "NDLS",
+        "daysOfRun": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      }
+    ]
+  },
+  "meta": {
+    "source": "railradar-fixture",
+    "timestamp": "2026-11-01T06:30:00.000Z"
+  }
+}

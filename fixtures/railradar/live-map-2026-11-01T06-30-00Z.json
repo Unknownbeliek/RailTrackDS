@@ -1,0 +1,142 @@
+{
+  "success": true,
+  "data": {
+    "takenAt": "2026-11-01T06:30:00.000Z",
+    "trains": [
+      {
+        "number": "12301",
+        "destinationCode": "CNB",
+        "currentStation": "TDL",
+        "nextStation": "ETW",
+        "minutesSinceDeparture": 37,
+        "minutesToNextStation": 19,
+        "delayMin": 6,
+        "lat": 26.931,
+        "lng": 78.7531,
+        "speedKph": 76,
+        "lastReportedAt": "2026-11-01T06:30:00.000Z"
+      },
+      {
+        "number": "12302",
+        "destinationCode": "NDLS",
+        "currentStation": "ALJN",
+        "nextStation": "GZB",
+        "minutesSinceDeparture": 22,
+        "minutesToNextStation": 52,
+        "delayMin": 0,
+        "lat": 28.1247,
+        "lng": 77.8947,
+        "speedKph": 82,
+        "lastReportedAt": "2026-11-01T06:30:00.000Z"
+      },
+      {
+        "number": "12004",
+        "destinationCode": "CNB",
+        "currentStation": "ETW",
+        "nextStation": "CNB",
+        "minutesSinceDeparture": 27,
+        "minutesToNextStation": 77,
+        "delayMin": 0,
+        "lat": 26.6975,
+        "lng": 79.3606,
+        "speedKph": 85,
+        "lastReportedAt": "2026-11-01T06:30:00.000Z"
+      },
+      {
+        "number": "12559",
+        "destinationCode": "CNB",
+        "currentStation": "ETW",
+        "nextStation": "CNB",
+        "minutesSinceDeparture": 14,
+        "minutesToNextStation": 120,
+        "delayMin": 12,
+        "lat": 26.7494,
+        "lng": 79.1571,
+        "speedKph": 69,
+        "lastReportedAt": "2026-11-01T06:30:00.000Z"
+      },
+      {
+        "number": "12451",
+        "destinationCode": "CNB",
+        "currentStation": "GZB",
+        "nextStation": "ALJN",
+        "minutesSinceDeparture": 53,
+        "minutesToNextStation": 46,
+        "delayMin": 4,
+        "lat": 28.2526,
+        "lng": 77.7859,
+        "speedKph": 58,
+        "lastReportedAt": "2026-11-01T06:30:00.000Z"
+      },
+      {
+        "number": "12801",
+        "destinationCode": "CNB",
+        "currentStation": "ETW",
+        "nextStation": "CNB",
+        "minutesSinceDeparture": 84,
+        "minutesToNextStation": 67,
+        "delayMin": 22,
+        "lat": 26.5983,
+        "lng": 79.7498,
+        "speedKph": 55,
+        "lastReportedAt": "2026-11-01T06:30:00.000Z"
+      },
+      {
+        "number": "64101",
+        "destinationCode": "CNB",
+        "currentStation": "NDLS",
+        "nextStation": "GZB",
+        "minutesSinceDeparture": 18,
+        "minutesToNextStation": 16,
+        "delayMin": 18,
+        "lat": 28.653,
+        "lng": 77.3352,
+        "speedKph": 40,
+        "lastReportedAt": "2026-11-01T06:30:00.000Z"
+      },
+      {
+        "number": "12391",
+        "destinationCode": "NDLS",
+        "currentStation": "ALJN",
+        "nextStation": "GZB",
+        "minutesSinceDeparture": 20,
+        "minutesToNextStation": 75,
+        "delayMin": 9,
+        "lat": 28.0583,
+        "lng": 77.9511,
+        "speedKph": 65,
+        "lastReportedAt": "2026-11-01T06:30:00.000Z"
+      },
+      {
+        "number": "12488",
+        "destinationCode": "NDLS",
+        "currentStation": "ETW",
+        "nextStation": "TDL",
+        "minutesSinceDeparture": 3,
+        "minutesToNextStation": 73,
+        "delayMin": 0,
+        "lat": 26.8014,
+        "lng": 78.9889,
+        "speedKph": 64,
+        "lastReportedAt": "2026-11-01T06:30:00.000Z"
+      },
+      {
+        "number": "14217",
+        "destinationCode": "NDLS",
+        "currentStation": "CNB",
+        "nextStation": "ETW",
+        "minutesSinceDeparture": 120,
+        "minutesToNextStation": 50,
+        "delayMin": 14,
+        "lat": 26.6859,
+        "lng": 79.4059,
+        "speedKph": 47,
+        "lastReportedAt": "2026-11-01T06:30:00.000Z"
+      }
+    ]
+  },
+  "meta": {
+    "source": "railradar-fixture",
+    "timestamp": "2026-11-01T06:30:00.000Z"
+  }
+}

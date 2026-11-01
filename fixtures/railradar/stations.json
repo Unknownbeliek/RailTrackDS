@@ -1,0 +1,65 @@
+{
+  "success": true,
+  "data": {
+    "stations": [
+      {
+        "code": "NDLS",
+        "name": "New Delhi",
+        "nameHi": "नई दिल्ली",
+        "zone": "NR",
+        "isJunction": true,
+        "lat": null,
+        "lng": null
+      },
+      {
+        "code": "GZB",
+        "name": "Ghaziabad",
+        "nameHi": "ग़ाज़ियाबाद",
+        "zone": "NR",
+        "isJunction": true,
+        "lat": null,
+        "lng": null
+      },
+      {
+        "code": "ALJN",
+        "name": "Aligarh Junction",
+        "nameHi": "अलीगढ़ जंक्शन",
+        "zone": "NCR",
+        "isJunction": true,
+        "lat": null,
+        "lng": null
+      },
+      {
+        "code": "TDL",
+        "name": "Tundla Junction",
+        "nameHi": "टूंडला जंक्शन",
+        "zone": "NCR",
+        "isJunction": true,
+        "lat": null,
+        "lng": null
+      },
+      {
+        "code": "ETW",
+        "name": "Etawah Junction",
+        "nameHi": "इटावा जंक्शन",
+        "zone": "NCR",
+        "isJunction": true,
+        "lat": null,
+        "lng": null
+      },
+      {
+        "code": "CNB",
+        "name": "Kanpur Central",
+        "nameHi": "कानपुर सेंट्रल",
+        "zone": "NCR",
+        "isJunction": true,
+        "lat": null,
+        "lng": null
+      }
+    ]
+  },
+  "meta": {
+    "source": "railradar-fixture",
+    "timestamp": "2026-11-01T06:30:00.000Z"
+  }
+}
