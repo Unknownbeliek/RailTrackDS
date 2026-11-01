@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "exactOptionalPropertyTypes": false,
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": false,
+    "declaration": false,
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@railpulse/shared": ["packages/shared/src/index.ts"],
+      "@railpulse/shared/*": ["packages/shared/src/*"],
+      "@railpulse/domain": ["packages/domain/src/index.ts"],
+      "@railpulse/domain/*": ["packages/domain/src/*"],
+      "@railpulse/db": ["packages/db/src/index.ts"],
+      "@railpulse/db/*": ["packages/db/src/*"],
+      "@railpulse/provider-railradar": ["packages/provider-railradar/src/index.ts"],
+      "@railpulse/provider-railradar/*": ["packages/provider-railradar/src/*"],
+      "@railpulse/ui-tokens": ["packages/ui-tokens/src/index.ts"],
+      "@railpulse/ui-tokens/*": ["packages/ui-tokens/src/*"]
+    }
+  }
+}

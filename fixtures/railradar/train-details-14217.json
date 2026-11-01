@@ -1,0 +1,136 @@
+{
+  "success": true,
+  "data": {
+    "train": {
+      "number": "14217",
+      "name": "Unchahar Express",
+      "nameHi": "उंचाहार एक्सप्रेस",
+      "category": "EXPRESS",
+      "type": "EXPRESS",
+      "sourceCode": "CNB",
+      "destinationCode": "NDLS",
+      "daysOfRun": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    "route": [
+      {
+        "seq": 0,
+        "stationCode": "CNB",
+        "stationName": "Kanpur Central",
+        "arrivalMin": null,
+        "departureMin": 600,
+        "arrivalDay": 0,
+        "departureDay": 0,
+        "distanceKm": 0,
+        "platform": "1",
+        "actualArrivalMin": null,
+        "actualDepartureMin": 616,
+        "delayMin": 16,
+        "lat": 26.4499,
+        "lng": 80.3319
+      },
+      {
+        "seq": 1,
+        "stationCode": "ETW",
+        "stationName": "Etawah Junction",
+        "arrivalMin": 770,
+        "departureMin": 774,
+        "arrivalDay": 0,
+        "departureDay": 0,
+        "distanceKm": 156.2,
+        "platform": "4",
+        "actualArrivalMin": null,
+        "actualDepartureMin": null,
+        "delayMin": null,
+        "lat": 26.7843,
+        "lng": 79.02
+      },
+      {
+        "seq": 2,
+        "stationCode": "TDL",
+        "stationName": "Tundla Junction",
+        "arrivalMin": 864,
+        "departureMin": 868,
+        "arrivalDay": 0,
+        "departureDay": 0,
+        "distanceKm": 239,
+        "platform": "3",
+        "actualArrivalMin": null,
+        "actualDepartureMin": null,
+        "delayMin": null,
+        "lat": 27.2167,
+        "lng": 78.2333
+      },
+      {
+        "seq": 3,
+        "stationCode": "ALJN",
+        "stationName": "Aligarh Junction",
+        "arrivalMin": 943,
+        "departureMin": 947,
+        "arrivalDay": 0,
+        "departureDay": 0,
+        "distanceKm": 307.3,
+        "platform": "2",
+        "actualArrivalMin": null,
+        "actualDepartureMin": null,
+        "delayMin": null,
+        "lat": 27.8974,
+        "lng": 78.088
+      },
+      {
+        "seq": 4,
+        "stationCode": "GZB",
+        "stationName": "Ghaziabad",
+        "arrivalMin": 1064,
+        "departureMin": 1068,
+        "arrivalDay": 0,
+        "departureDay": 0,
+        "distanceKm": 414.8,
+        "platform": "1",
+        "actualArrivalMin": null,
+        "actualDepartureMin": null,
+        "delayMin": null,
+        "lat": 28.6618,
+        "lng": 77.4378
+      },
+      {
+        "seq": 5,
+        "stationCode": "NDLS",
+        "stationName": "New Delhi",
+        "arrivalMin": 1096,
+        "departureMin": null,
+        "arrivalDay": 0,
+        "departureDay": 0,
+        "distanceKm": 440.4,
+        "platform": "4",
+        "actualArrivalMin": null,
+        "actualDepartureMin": null,
+        "delayMin": null,
+        "lat": 28.6431,
+        "lng": 77.2197
+      }
+    ],
+    "live": {
+      "currentStation": "CNB",
+      "nextStation": "ETW",
+      "minutesSinceDeparture": 150,
+      "minutesToNextStation": 20,
+      "delayMin": 16,
+      "lat": 26.745,
+      "lng": 79.1743,
+      "speedKph": 45,
+      "takenAt": "2026-11-01T07:00:00.000Z"
+    }
+  },
+  "meta": {
+    "source": "railradar-fixture",
+    "timestamp": "2026-11-01T06:30:00.000Z"
+  }
+}

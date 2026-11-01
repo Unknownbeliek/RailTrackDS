@@ -1,0 +1,167 @@
+{
+  "app": {
+    "name": "RailPulse",
+    "tagline": "Trains and delays, honestly labelled",
+    "about": "About"
+  },
+  "tabs": {
+    "map": "Map",
+    "search": "Search",
+    "replay": "Replay",
+    "about": "About"
+  },
+  "map": {
+    "searchPlaceholder": "Train number, train name or station",
+    "corridor": "Corridor",
+    "layers": "Layers",
+    "locate": "Locate",
+    "counts": "{{trains}} trains in this snapshot",
+    "countsDetail": "{{onTime}} on time · {{delayed}} delayed · {{major}} over 15 min",
+    "snapshot": "Snapshot",
+    "estimated": "Estimated",
+    "noSnapshot": "No snapshot yet",
+    "noSnapshotBody": "Recorded data appears here as soon as a snapshot is stored. Until then the map shows stations only.",
+    "inIndia": "Corridor only",
+    "recentre": "Centre on corridor",
+    "tapTrain": "Tap a train to see why it is late",
+    "webglTitle": "The map cannot start on this device",
+    "webglBody": "This browser has no WebGL 2, which the map needs. Everything else on this screen still works: the train list below is complete and carries the same as-of time.",
+    "webglHint": "Chrome: Settings → System → turn on “Use graphics acceleration when available”, then relaunch. Firefox and Edge usually work without it.",
+    "tilesSlow": "Map tiles are not loading (offline, or blocked). Trains are listed below.",
+    "mapLabel": "Corridor map"
+  },
+  "chips": {
+    "all": "All",
+    "delayed": "Delayed",
+    "express": "Express",
+    "myTrip": "My trip"
+  },
+  "freshness": {
+    "recent": "Recent",
+    "aged": "Aged",
+    "old": "Old",
+    "stale": "Stale data",
+    "staleBody": "This snapshot is over three hours old. The markers sit exactly where the recording left them, so treat them as history, not as positions now.",
+    "budgetLimited": "Serving saved data: today's provider budget is used up.",
+    "replayBody": "You are looking at a recording. Trains move as the replay clock advances."
+  },
+  "delay": {
+    "ontime": "On time",
+    "slight": "Slight delay",
+    "major": "Major delay",
+    "minutes": "+{{count}} min",
+    "unknown": "—",
+    "unit": "min"
+  },
+  "train": {
+    "current": "Between {{from}} and {{to}}",
+    "next": "Next: {{station}}",
+    "toNext": "{{count}} min to next station",
+    "speed": "About {{speed}} km/h",
+    "direction": "Direction",
+    "down": "Towards Kanpur",
+    "up": "Towards Delhi",
+    "stations": "Stations",
+    "scheduled": "Scheduled",
+    "observed": "Last seen",
+    "notRunning": "Not running in the latest snapshot",
+    "notRunningBody": "The latest snapshot does not include this train. The timetable below is still correct.",
+    "share": "Share",
+    "alert": "Set alert",
+    "alertComing": "Coming later",
+    "nearby": "Nearby trains",
+    "nearbyEmpty": "No other trains within 50 km in this snapshot.",
+    "ahead": "Ahead",
+    "behind": "Behind",
+    "opposite": "Opposite direction",
+    "overtake": "May overtake",
+    "back": "Back",
+    "stale": "Held at the next station: the estimate is past the expected arrival."
+  },
+  "reason": {
+    "title": "Why the delay",
+    "noData": "Not enough fresh data to estimate a reason",
+    "noDataBody": "Reasons need two snapshots no more than 30 minutes apart.",
+    "likely": "Likely",
+    "possible": "Possible",
+    "unknown": "Unknown",
+    "R1": "Waiting for a faster train ahead",
+    "R2": "Fog speed limit",
+    "R3": "Extended halt at a station",
+    "R4": "No pattern in the recorded snapshots",
+    "evidence": "Evidence: {{text}}",
+    "blockedBy": "{{train}} is {{km}} km behind"
+  },
+  "history": {
+    "title": "How this train usually runs",
+    "usually": "Usually +{{minutes}} min here",
+    "samples": "{{count}} samples",
+    "empty": "No history recorded yet."
+  },
+  "search": {
+    "title": "Search",
+    "placeholder": "Try 12301, Rajdhani or Kanpur",
+    "hint": "Search runs on our own database, so it costs nothing.",
+    "recent": "Recent searches",
+    "trains": "Trains",
+    "stations": "Stations",
+    "noResults": "Nothing matched \"{{term}}\".",
+    "minChars": "Type at least two characters."
+  },
+  "replay": {
+    "title": "Replay",
+    "subtitle": "Recorded snapshots, played back between stations",
+    "day": "Day",
+    "speed": "Speed",
+    "play": "Play",
+    "pause": "Pause",
+    "noRecording": "No snapshots recorded for this day.",
+    "label": "Replay",
+    "positions": "{{count}} snapshots recorded"
+  },
+  "share": {
+    "title": "Share this train",
+    "body": "Anyone with the link sees the train, its estimated position and the as-of time. No account, no location.",
+    "copy": "Copy link",
+    "copied": "Link copied",
+    "expires": "Links expire after 7 days",
+    "readOnly": "Read-only status",
+    "error": "This share link is unknown or has expired."
+  },
+  "admin": {
+    "title": "Provider budget",
+    "token": "Admin token",
+    "unlock": "Unlock",
+    "badToken": "That token was refused.",
+    "used": "Used this month",
+    "left": "Left",
+    "reserve": "Reserve untouched",
+    "today": "Today",
+    "cap": "Monthly cap",
+    "allowance": "Today's allowance",
+    "next": "Next planned snapshot",
+    "warn": "Over 80 percent of the monthly cap is used.",
+    "calls": "Last provider calls",
+    "noCalls": "No provider calls yet.",
+    "refresh": "Take a snapshot now",
+    "refreshed": "Snapshot stored: {{count}} observations.",
+    "costNote": "Viewers never spend requests. Only scheduled jobs and this button do."
+  },
+  "about": {
+    "title": "About RailPulse",
+    "body": "RailPulse shows trains on one corridor at a time, recorded a few times a day, and says how old and how estimated everything is.",
+    "notAffiliated": "Not affiliated with Indian Railways. Estimates must not be used for safety decisions.",
+    "credits": "Train data from RailRadar. Map tiles and data © OpenStreetMap contributors.",
+    "phases": "Phase 1 shows the Delhi–Kanpur corridor. Alerts and more corridors come later.",
+    "budget": "The whole product runs inside 100 provider requests a month."
+  },
+  "common": {
+    "loading": "Loading",
+    "retry": "Try again",
+    "error": "Something went wrong",
+    "offline": "Offline: showing the last saved map",
+    "language": "हिन्दी",
+    "close": "Close",
+    "km": "km"
+  }
+}

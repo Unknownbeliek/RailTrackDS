@@ -1,0 +1,155 @@
+{
+  "success": true,
+  "data": {
+    "takenAt": "2026-11-01T07:00:00.000Z",
+    "trains": [
+      {
+        "number": "12301",
+        "destinationCode": "CNB",
+        "currentStation": "ETW",
+        "nextStation": "CNB",
+        "minutesSinceDeparture": 9,
+        "minutesToNextStation": 98,
+        "delayMin": 9,
+        "lat": 26.7562,
+        "lng": 79.1303,
+        "speedKph": 87,
+        "lastReportedAt": "2026-11-01T07:00:00.000Z"
+      },
+      {
+        "number": "12302",
+        "destinationCode": "NDLS",
+        "currentStation": "ALJN",
+        "nextStation": "GZB",
+        "minutesSinceDeparture": 52,
+        "minutesToNextStation": 22,
+        "delayMin": 3,
+        "lat": 28.4345,
+        "lng": 77.6311,
+        "speedKph": 75,
+        "lastReportedAt": "2026-11-01T07:00:00.000Z"
+      },
+      {
+        "number": "12004",
+        "destinationCode": "CNB",
+        "currentStation": "ETW",
+        "nextStation": "CNB",
+        "minutesSinceDeparture": 57,
+        "minutesToNextStation": 47,
+        "delayMin": 0,
+        "lat": 26.601,
+        "lng": 79.739,
+        "speedKph": 80,
+        "lastReportedAt": "2026-11-01T07:00:00.000Z"
+      },
+      {
+        "number": "12002",
+        "destinationCode": "CNB",
+        "currentStation": "NDLS",
+        "nextStation": "GZB",
+        "minutesSinceDeparture": 5,
+        "minutesToNextStation": 13,
+        "delayMin": 4,
+        "lat": 28.6483,
+        "lng": 77.2803,
+        "speedKph": 80,
+        "lastReportedAt": "2026-11-01T07:00:00.000Z"
+      },
+      {
+        "number": "12559",
+        "destinationCode": "CNB",
+        "currentStation": "ETW",
+        "nextStation": "CNB",
+        "minutesSinceDeparture": 44,
+        "minutesToNextStation": 90,
+        "delayMin": 18,
+        "lat": 26.6745,
+        "lng": 79.4508,
+        "speedKph": 65,
+        "lastReportedAt": "2026-11-01T07:00:00.000Z"
+      },
+      {
+        "number": "12451",
+        "destinationCode": "CNB",
+        "currentStation": "GZB",
+        "nextStation": "ALJN",
+        "minutesSinceDeparture": 83,
+        "minutesToNextStation": 16,
+        "delayMin": 5,
+        "lat": 28.0209,
+        "lng": 77.9829,
+        "speedKph": 54,
+        "lastReportedAt": "2026-11-01T07:00:00.000Z"
+      },
+      {
+        "number": "12801",
+        "destinationCode": "CNB",
+        "currentStation": "ETW",
+        "nextStation": "CNB",
+        "minutesSinceDeparture": 114,
+        "minutesToNextStation": 37,
+        "delayMin": 26,
+        "lat": 26.5318,
+        "lng": 80.0104,
+        "speedKph": 53,
+        "lastReportedAt": "2026-11-01T07:00:00.000Z"
+      },
+      {
+        "number": "64101",
+        "destinationCode": "CNB",
+        "currentStation": "NDLS",
+        "nextStation": "GZB",
+        "minutesSinceDeparture": 18,
+        "minutesToNextStation": 16,
+        "delayMin": 28,
+        "lat": 28.653,
+        "lng": 77.3352,
+        "speedKph": 40,
+        "lastReportedAt": "2026-11-01T07:00:00.000Z"
+      },
+      {
+        "number": "12391",
+        "destinationCode": "NDLS",
+        "currentStation": "ALJN",
+        "nextStation": "GZB",
+        "minutesSinceDeparture": 50,
+        "minutesToNextStation": 45,
+        "delayMin": 11,
+        "lat": 28.2997,
+        "lng": 77.7458,
+        "speedKph": 61,
+        "lastReportedAt": "2026-11-01T07:00:00.000Z"
+      },
+      {
+        "number": "12488",
+        "destinationCode": "NDLS",
+        "currentStation": "ETW",
+        "nextStation": "TDL",
+        "minutesSinceDeparture": 33,
+        "minutesToNextStation": 43,
+        "delayMin": 7,
+        "lat": 26.9721,
+        "lng": 78.6784,
+        "speedKph": 59,
+        "lastReportedAt": "2026-11-01T07:00:00.000Z"
+      },
+      {
+        "number": "14217",
+        "destinationCode": "NDLS",
+        "currentStation": "CNB",
+        "nextStation": "ETW",
+        "minutesSinceDeparture": 150,
+        "minutesToNextStation": 20,
+        "delayMin": 16,
+        "lat": 26.745,
+        "lng": 79.1743,
+        "speedKph": 45,
+        "lastReportedAt": "2026-11-01T07:00:00.000Z"
+      }
+    ]
+  },
+  "meta": {
+    "source": "railradar-fixture",
+    "timestamp": "2026-11-01T07:00:00.000Z"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "threshold": 3,
+  "minTokens": 60,
+  "reporters": ["console", "json"],
+  "output": ".jscpd",
+  "ignore": ["**/node_modules/**", "**/dist/**", "fixtures/**", "**/*.json", "**/migrations/**"]
+}

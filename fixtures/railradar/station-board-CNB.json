@@ -1,0 +1,45 @@
+{
+  "success": true,
+  "data": {
+    "stationCode": "CNB",
+    "takenAt": "2026-11-01T07:00:00.000Z",
+    "trains": [
+      {
+        "number": "12302",
+        "name": "New Delhi Rajdhani Express",
+        "delayMin": 3,
+        "platform": "2",
+        "expectedAt": "2026-11-01T07:18:00.000Z",
+        "direction": "up"
+      },
+      {
+        "number": "12391",
+        "name": "Shramjeevi Express",
+        "delayMin": 11,
+        "platform": "3",
+        "expectedAt": "2026-11-01T07:35:00.000Z",
+        "direction": "up"
+      },
+      {
+        "number": "12488",
+        "name": "Seemanchal Express",
+        "delayMin": 7,
+        "platform": "4",
+        "expectedAt": "2026-11-01T07:40:00.000Z",
+        "direction": "up"
+      },
+      {
+        "number": "14217",
+        "name": "Unchahar Express",
+        "delayMin": 16,
+        "platform": "2",
+        "expectedAt": "2026-11-01T07:58:00.000Z",
+        "direction": "up"
+      }
+    ]
+  },
+  "meta": {
+    "source": "railradar-fixture",
+    "timestamp": "2026-11-01T06:30:00.000Z"
+  }
+}
